@@ -1,0 +1,49 @@
+name: check if there are api updates
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 9 * * 1-5"
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  stage-updates:
+    runs-on: ubuntu-latest
+    name: Propose update definition
+    env:
+      TRACKING_BRANCH: upstream
+    steps:
+      - uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-node@v4
+        with:
+          check-latest: true
+          cache: "yarn"
+          node-version-file: .nvmrc
+      - name: Setup git
+        run: |
+          git fetch origin ${TRACKING_BRANCH} || echo "Branch ${TRACKING_BRANCH} not found"
+          git checkout ${TRACKING_BRANCH} 2>/dev/null || git checkout -b ${TRACKING_BRANCH}
+      - name: Generate API
+        run: |
+          yarn
+          yarn generate
+          yarn build
+      - name: Create a PR
+        run: |
+          git config user.name update-bot
+          git config user.email no-reply@playt.net
+          git config push.autoSetupRemote true
+          
+          git add .
+
+          if [[ `git status --porcelain` ]]; then
+            git status --porcelain
+            git commit -m "⬇ Update api"
+            git push
+            gh pr create --title "⬇ Update api" --body "synchronizing to the current api defintion" || exit 0
+          fi
