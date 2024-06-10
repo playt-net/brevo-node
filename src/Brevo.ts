@@ -1111,6 +1111,20 @@ export interface GetCampaignOverview {
 
 export type GetExtendedCampaignOverview = GetCampaignOverview & {
   /**
+   * utm parameter associated with campaign
+   * @example "myutm"
+   */
+  utmCampaignValue?: string;
+  /** @example "Brevo" */
+  utmSource?: string;
+  /** @example "EMAIL" */
+  utmMedium?: string;
+  /**
+   * utm id
+   * @example 10
+   */
+  utmID?: number;
+  /**
    * Retrieved the status of test email sending. (true=Test email has been sent  false=Test email has not been sent)
    * @example true
    */
@@ -1704,6 +1718,20 @@ export interface CreateModel {
   id: number;
 }
 
+export interface CreatePaymentResponse {
+  /**
+   * ID of the object created
+   * @format int64
+   * @example 122
+   */
+  id: number;
+  /**
+   * URL of the payment request created
+   * @example "https://pay.brevo.com/payment/6d4ec0b2b48ef803df4103ve"
+   */
+  url?: string;
+}
+
 export interface CreateUpdateContactModel {
   /**
    * ID of the contact when a new contact is created
@@ -2295,7 +2323,8 @@ export interface GetSmsEventReport {
       | "unsubscription"
       | "replies"
       | "blocked"
-      | "rejected";
+      | "rejected"
+      | "skipped";
     /**
      * Reason of bounce (only available if the event is hardbounce or softbounce)
      * @example "Message is undeliverable due to an incorrect / invalid / blacklisted / permanently barred MSISDN for this operator"
@@ -4932,17 +4961,23 @@ export interface GetTransacAggregatedSmsReport {
    */
   replied?: number;
   /**
-   * Number of accepted for the timeframe
+   * Number of accepted SMS for the timeframe
    * @format int64
    * @example 252
    */
   accepted?: number;
   /**
-   * Number of rejected for the timeframe
+   * Number of rejected SMS for the timeframe
    * @format int64
    * @example 8
    */
   rejected?: number;
+  /**
+   * Number of skipped SMS for the timeframe
+   * @format int64
+   * @example 8
+   */
+  skipped?: number;
 }
 
 export interface GetTransacSmsReport {
@@ -4996,17 +5031,23 @@ export interface GetTransacSmsReport {
      */
     replied?: number;
     /**
-     * Number of accepted for the date
+     * Number of accepted SMS for the date
      * @format int64
      * @example 85
      */
     accepted?: number;
     /**
-     * Number of rejected for the date
+     * Number of rejected SMS for the date
      * @format int64
      * @example 1
      */
     rejected?: number;
+    /**
+     * Number of skipped SMS for the date
+     * @format int64
+     * @example 1
+     */
+    skipped?: number;
   }[];
 }
 
@@ -5342,10 +5383,17 @@ export interface SubAccountsResponse {
      * @format int64
      */
     createdAt: number;
+    /** Group details */
+    groups: {
+      /** Group identifier */
+      id?: string;
+      /** Name of the group */
+      name?: string;
+    }[];
   }[];
 }
 
-/** @example {"companyName":"Test Sub-account","email":"test-sub@example.com","timezone":"Europe/Paris","language":"en"} */
+/** @example {"companyName":"Test Sub-account","email":"test-sub@example.com","timezone":"Europe/Paris","language":"en","groupIds":["5f8f8c3b5f56a02d4433b3a7","5f8f8c3b5f56a02d4433b3a8"]} */
 export interface CreateSubAccount {
   /** Set the name of the sub-account company */
   companyName: string;
@@ -5355,6 +5403,8 @@ export interface CreateSubAccount {
   language?: "en" | "fr" | "it" | "es" | "pt" | "de";
   /** Set the timezone of the sub-account */
   timezone?: string;
+  /** Set the group(s) for the sub-account */
+  groupIds?: string[];
 }
 
 export interface CreateSubAccountResponse {
@@ -5494,6 +5544,12 @@ export interface SubAccountDetailsResponse {
   email?: string;
   /** Sub-account company name */
   companyName?: string;
+  groups?: {
+    /** Group id */
+    id?: string;
+    /** Name of the group */
+    name?: string;
+  }[];
   /** Sub-account plan details */
   planInfo?: {
     /** Credits quota and remaining credits on the sub-account */
@@ -5599,7 +5655,7 @@ export interface SubAccountUpdatePlanRequest {
     email?: number;
     /**
      * Number of SMS credits | available in ENT-v2 only
-     * @format int64
+     * @format float
      */
     sms?: number;
     /**
@@ -6108,17 +6164,17 @@ export interface Event {
      * SMS associated with the event
      * @example "+91xxxxxxxxxx"
      */
-    sms?: string;
+    phone_id?: string;
     /**
      * whatsapp associated with the event
      * @example "+91xxxxxxxxxx"
      */
-    whatsapp?: string;
+    whatsapp_id?: string;
     /**
      * landline_number associated with the event
      * @example "+91xxxxxxxxxx"
      */
-    landline_number?: string;
+    landline_number_id?: string;
     /**
      * ext_id associated with the event
      * @example "abc123"
@@ -7172,10 +7228,15 @@ export interface CreatePaymentRequest {
    * @example 43
    */
   contactId: number;
+  /**
+   * description of payment request
+   * @example "Shipping Cost for sending bottles to NYC"
+   */
+  description?: string;
   /** Optional. Use this object if you want to let Brevo send an email to the contact, with the payment request URL. If empty, no notifications (message and reminders) will be sent. */
   notification?: Notification;
   /** Optional. Redirect contact to a custom success page once payment is successful. If empty the default Brevo page will be displayed once a payment is validated */
-  configuration: Configuration;
+  configuration?: Configuration;
 }
 
 /** Optional. Redirect contact to a custom success page once payment is successful. If empty the default Brevo page will be displayed once a payment is validated */
@@ -7238,6 +7299,12 @@ export interface GetPaymentRequest {
    * @example 43
    */
   contactId?: number;
+  /**
+   * number of reminders sent.
+   * @format int64
+   * @example 5
+   */
+  numberOfRemindersSent?: number;
   /** Specify the payment currency and amount. */
   cart: Cart;
   /** Optional. Use this object if you want to let Brevo send an email to the contact, with the payment request URL. If empty, no notifications (message and reminders) will be sent. */
@@ -7422,7 +7489,7 @@ export class Brevo<SecurityDataType extends unknown> extends HttpClient<Security
         type?: "classic" | "trigger";
         /** Filter on the status of the campaign */
         status?: "suspended" | "archive" | "sent" | "queued" | "draft" | "inProcess";
-        /** Filter on the type of statistics required. Example **globalStats** value will only fetch globalStats info of the campaign in returned response. */
+        /** Filter on the type of statistics required. Example **globalStats** value will only fetch globalStats info of the campaign in returned response.This option only returns data for events occurred in the last 6 months.For older campaigns, it’s advisable to use the **Get Campaign Report** endpoint. */
         statistics?: "globalStats" | "linksStats" | "statsByDomain";
         /**
          * **Mandatory if endDate is used**. Starting (urlencoded) UTC date-time (YYYY-MM-DDTHH:mm:ss.SSSZ) to filter the sent email campaigns.
@@ -8368,6 +8435,8 @@ export class Brevo<SecurityDataType extends unknown> extends HttpClient<Security
         segmentId?: number;
         /** Ids of the list. **Either listIds or segmentId can be passed.** */
         listIds?: number[];
+        /** Filter the contacts on the basis of attributes. **Allowed operator: equals. (e.g. filter=equals(FIRSTNAME,"Antoine"), filter=equals(B1, true), filter=equals(DOB, "1989-11-23"))** */
+        filter?: string;
       },
       params: RequestParams = {},
     ) =>
@@ -9435,7 +9504,8 @@ export class Brevo<SecurityDataType extends unknown> extends HttpClient<Security
           | "unsubscription"
           | "replies"
           | "blocked"
-          | "rejected";
+          | "rejected"
+          | "skipped";
         /** Filter the report for specific tags passed as a serialized urlencoded array */
         tags?: string;
         /**
@@ -11031,6 +11101,39 @@ export class Brevo<SecurityDataType extends unknown> extends HttpClient<Security
       }),
 
     /**
+     * @description This endpoint allows to dissociate an IP from sub-accounts
+     *
+     * @tags Master account
+     * @name SubAccountIpDissociateDelete
+     * @summary Dissociate an IP to sub-accounts
+     * @request DELETE:/corporate/subAccount/ip/dissociate
+     * @secure
+     */
+    subAccountIpDissociateDelete: (
+      data: {
+        /**
+         * IP address
+         * @example "103.11.32.88"
+         */
+        ip: string;
+        /**
+         * Pass the list of sub-account Ids to be dissociated from the IP address
+         * @example [234322,325553,893432]
+         */
+        ids: number[];
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<void, ErrorModel>({
+        path: `/corporate/subAccount/ip/dissociate`,
+        method: "DELETE",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
      * @description This endpoint allows you to retrieve a specific group’s information such as the list of sub-organizations and the user associated with the group.
      *
      * @tags Master account
@@ -11333,6 +11436,16 @@ export class Brevo<SecurityDataType extends unknown> extends HttpClient<Security
          * @example 91
          */
         countryCode?: number;
+        /**
+         * Contact ids to be linked with company
+         * @example [1,2,3]
+         */
+        linkedContactsIds?: number[];
+        /**
+         * Deal ids to be linked with company
+         * @example ["61a5ce58c5d4795761045990","61a5ce58c5d4795761045991","61a5ce58c5d4795761045992"]
+         */
+        linkedDealsIds?: string[];
       },
       params: RequestParams = {},
     ) =>
@@ -11635,6 +11748,16 @@ export class Brevo<SecurityDataType extends unknown> extends HttpClient<Security
          * @example {"deal_owner":"6093d2425a9b436e9519d034","amount":12}
          */
         attributes?: object;
+        /**
+         * Contact ids to be linked with deal
+         * @example [1,2,3]
+         */
+        linkedContactsIds?: number[];
+        /**
+         * Company ids to be linked with deal
+         * @example ["61a5ce58c5d4795761045990","61a5ce58c5d4795761045991","61a5ce58c5d4795761045992"]
+         */
+        linkedCompaniesIds?: string[];
       },
       params: RequestParams = {},
     ) =>
@@ -13470,7 +13593,7 @@ export class Brevo<SecurityDataType extends unknown> extends HttpClient<Security
      * @secure
      */
     createPaymentRequest: (data: CreatePaymentRequest, params: RequestParams = {}) =>
-      this.request<CreateModel, ErrorModel>({
+      this.request<CreatePaymentResponse, ErrorModel>({
         path: `/payments/requests`,
         method: "POST",
         body: data,
