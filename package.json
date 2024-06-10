@@ -1,5 +1,5 @@
 {
-  "name": "@playt-net/brevo",
+  "name": "@playt/brevo",
   "version": "2.2.0",
   "description": "NodeJS client for @getbrevo/brevo",
   "repository": {
