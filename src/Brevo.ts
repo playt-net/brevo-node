@@ -6301,6 +6301,11 @@ export interface Order {
      */
     countryCode?: string;
     /**
+     * Billing country name.
+     * @example "Canada"
+     */
+    country?: string;
+    /**
      * Phone number to contact for further details about the order, Mandatory if "email" field is not passed.
      * @example "01559 032133"
      */
@@ -6433,6 +6438,11 @@ export interface CreateUpdateCategory {
    * @example "2017-05-12T12:30:00.000Z"
    */
   deletedAt?: string;
+  /**
+   * category deleted from the shop's database
+   * @example true
+   */
+  isDeleted?: boolean;
 }
 
 export interface CreateUpdateCategories {
@@ -6457,6 +6467,11 @@ export interface CreateUpdateCategories {
    * @example "2017-05-12T12:30:00.000Z"
    */
   deletedAt?: string;
+  /**
+   * category deleted from the shop's database
+   * @example true
+   */
+  isDeleted?: boolean;
 }
 
 export interface CreateUpdateBatchCategory {
@@ -6634,6 +6649,11 @@ export interface CreateUpdateProduct {
   updateEnabled?: boolean;
   /** UTC date-time (YYYY-MM-DDTHH:mm:ss.SSSZ) of the product deleted from the shop's database */
   deletedAt?: string;
+  /**
+   * product deleted from the shop's database
+   * @example true
+   */
+  isDeleted?: boolean;
 }
 
 export interface CreateUpdateBatchProducts {
@@ -6692,6 +6712,11 @@ export interface CreateUpdateProducts {
   metaInfo?: Record<string, string | number>;
   /** UTC date-time (YYYY-MM-DDTHH:mm:ss.SSSZ) of the product deleted from the shop's database */
   deletedAt?: string;
+  /**
+   * product deleted from the shop's database
+   * @example true
+   */
+  isDeleted?: boolean;
 }
 
 export interface CreateProductModel {
