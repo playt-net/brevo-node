@@ -872,7 +872,8 @@ export interface ErrorModel {
     | "unauthorized"
     | "account_under_validation"
     | "not_acceptable"
-    | "bad_request";
+    | "bad_request"
+    | "unprocessable_entity";
   /**
    * Readable message associated to the failure
    * @example "POST Method is not allowed on this path"
@@ -7496,6 +7497,7 @@ export class HttpClient<SecurityDataType = unknown> {
  *   | 404  | Error. Object does not exist |
  *   | 405  | Error. Method not allowed  |
  *   | 406  | Error. Not Acceptable  |
+ *   | 422  | Error. Unprocessable Entity |
  */
 export class Brevo<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
   emailCampaigns = {
@@ -11129,12 +11131,12 @@ export class Brevo<SecurityDataType extends unknown> extends HttpClient<Security
      * @description This endpoint allows to dissociate an IP from sub-accounts
      *
      * @tags Master account
-     * @name SubAccountIpDissociateDelete
+     * @name SubAccountIpDissociateUpdate
      * @summary Dissociate an IP to sub-accounts
-     * @request DELETE:/corporate/subAccount/ip/dissociate
+     * @request PUT:/corporate/subAccount/ip/dissociate
      * @secure
      */
-    subAccountIpDissociateDelete: (
+    subAccountIpDissociateUpdate: (
       data: {
         /**
          * IP address
@@ -11151,7 +11153,7 @@ export class Brevo<SecurityDataType extends unknown> extends HttpClient<Security
     ) =>
       this.request<void, ErrorModel>({
         path: `/corporate/subAccount/ip/dissociate`,
-        method: "DELETE",
+        method: "PUT",
         body: data,
         secure: true,
         type: ContentType.Json,
@@ -12689,6 +12691,71 @@ export class Brevo<SecurityDataType extends unknown> extends HttpClient<Security
         path: `/ecommerce/activate`,
         method: "POST",
         secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Ecommerce
+     * @name SetConfigDisplayCurrency
+     * @summary Set the ISO 4217 compliant display currency code for your Brevo account
+     * @request POST:/ecommerce/config/displayCurrency
+     * @secure
+     */
+    setConfigDisplayCurrency: (
+      data: {
+        /**
+         * ISO 4217 compliant display currency code
+         * @example "EUR"
+         */
+        code: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          /**
+           * ISO 4217 compliant display currency code
+           * @example "EUR"
+           */
+          code: string;
+        },
+        ErrorModel
+      >({
+        path: `/ecommerce/config/displayCurrency`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Ecommerce
+     * @name ConfigDisplayCurrencyList
+     * @summary Get the ISO 4217 compliant display currency code for your Brevo account
+     * @request GET:/ecommerce/config/displayCurrency
+     * @secure
+     */
+    configDisplayCurrencyList: (params: RequestParams = {}) =>
+      this.request<
+        {
+          /**
+           * ISO 4217 compliant display currency code
+           * @example "EUR"
+           */
+          code: string;
+        },
+        ErrorModel
+      >({
+        path: `/ecommerce/config/displayCurrency`,
+        method: "GET",
+        secure: true,
+        format: "json",
         ...params,
       }),
 
