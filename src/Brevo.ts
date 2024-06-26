@@ -1124,10 +1124,10 @@ export type GetExtendedCampaignOverview = GetCampaignOverview & {
   /** @example "EMAIL" */
   utmMedium?: string;
   /**
-   * utm id
-   * @example 10
+   * utm id activate
+   * @example true
    */
-  utmID?: number;
+  utmIDActive?: boolean;
   /**
    * Retrieved the status of test email sending. (true=Test email has been sent  false=Test email has not been sent)
    * @example true
@@ -4561,13 +4561,18 @@ export interface CreateAttribute {
     label: string;
   }[];
   /**
+   * List of options you want to add for multiple-choice attribute. **Use only if the attribute's category is "normal" and attribute's type is "multiple-choice".** For example:
+   * **["USA","INDIA"]**
+   */
+  multiCategoryOptions?: string[];
+  /**
    * Type of the attribute. **Use only if the attribute's category is 'normal', 'category' or 'transactional'**
-   * Type **boolean** is only available if the category is **normal** attribute
+   * Type **boolean and multiple-choice** is only available if the category is **normal** attribute
    * Type **id** is only available if the category is **transactional** attribute
    * Type **category** is only available if the category is **category** attribute
    * @example "text"
    */
-  type?: "text" | "date" | "float" | "boolean" | "id" | "category";
+  type?: "text" | "date" | "float" | "boolean" | "id" | "category" | "multiple-choice";
 }
 
 export interface UpdateAttribute {
@@ -4592,6 +4597,11 @@ export interface UpdateAttribute {
      */
     label: string;
   }[];
+  /**
+   * Use this option to add multiple-choice attributes options only if the attribute's category is "normal". **This option is specifically designed for updating multiple-choice attributes**. For example:
+   * **["USA","INDIA"]**
+   */
+  multiCategoryOptions?: string[];
 }
 
 export interface CreateList {
@@ -6260,6 +6270,11 @@ export interface Order {
    * @example 308.42
    */
   amount: number;
+  /**
+   * ID of store where the order is placed
+   * @example "ST-21"
+   */
+  storeId?: string;
   products: {
     /**
      * ID of the product.
@@ -8657,7 +8672,7 @@ export class Brevo<SecurityDataType extends unknown> extends HttpClient<Security
      * @secure
      */
     updateAttribute: (
-      attributeCategory: "category" | "calculated" | "global",
+      attributeCategory: "category" | "calculated" | "global" | "normal",
       attributeName: string,
       data: UpdateAttribute,
       params: RequestParams = {},
@@ -11926,6 +11941,75 @@ export class Brevo<SecurityDataType extends unknown> extends HttpClient<Security
         body: data,
         secure: true,
         type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
+     * @description Import deals from a CSV file with mapping options.
+     *
+     * @tags Deals
+     * @name DealsImportCreate
+     * @summary Import deals(creation and updation)
+     * @request POST:/crm/deals/import
+     * @secure
+     */
+    dealsImportCreate: (
+      data: {
+        /**
+         * The CSV file to upload.The file should have the first row as the mapping attribute. Some default attribute names are
+         * (a) deal_id [brevo mongoID to update deals]
+         * (b) associated_contact
+         * (c) associated_company
+         * (f) any other attribute with internal name
+         * @format binary
+         * @example false
+         */
+        file?: File;
+        /** The mapping options in JSON format. */
+        mapping?: {
+          /**
+           * Determines whether to link related entities during the import process.
+           * @example true
+           */
+          link_entities?: boolean;
+          /**
+           * Determines whether to unlink related entities during the import process.
+           * @example false
+           */
+          unlink_entities?: boolean;
+          /**
+           * Determines whether to update based on deal ID or treat every row as create
+           * @example true
+           */
+          update_existing_records?: boolean;
+          /**
+           * Determines whether unset a specific attribute during update if values input is blank
+           * @example false
+           */
+          unset_empty_attributes?: boolean;
+        };
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          /**
+           * The ID of the import process
+           * @example 50
+           */
+          processId?: number;
+        },
+        {
+          /** @example "Bad request : With reason" */
+          message?: string;
+        }
+      >({
+        path: `/crm/deals/import`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.FormData,
+        format: "json",
         ...params,
       }),
 
