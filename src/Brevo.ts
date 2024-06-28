@@ -4390,10 +4390,10 @@ export interface CreateDoiContact {
    */
   email: string;
   /**
-   * Pass the set of attributes and their values. **These attributes must be present in your Brevo account**. For eg. **{'FNAME':'Elly', 'LNAME':'Roger'}**
-   * @example {"FNAME":"Elly","LNAME":"Roger"}
+   * Pass the set of attributes and their values. **These attributes must be present in your Brevo account**. For eg. **{'FNAME':'Elly', 'LNAME':'Roger', 'COUNTRIES':['India','China']}**
+   * @example {"FNAME":"Elly","LNAME":"Roger","COUNTRIES":["India","China"]}
    */
-  attributes?: Record<string, any>;
+  attributes?: Record<string, number | string | boolean | string[]>;
   /** Lists under user account where contact should be added */
   includeListIds: number[];
   /** Lists under user account where contact should not be added */
@@ -4427,10 +4427,10 @@ export interface CreateContact {
   ext_id?: string;
   /**
    * Pass the set of attributes and their values. The attribute's parameter should be passed in capital letter while creating a contact. Values that don't match the attribute type (e.g. text or string in a date attribute) will be ignored. **These attributes must be present in your Brevo account.**. For eg:
-   * **{"FNAME":"Elly", "LNAME":"Roger"}**
-   * @example {"FNAME":"Elly","LNAME":"Roger"}
+   * **{"FNAME":"Elly", "LNAME":"Roger", "COUNTRIES":["India","China"]}**
+   * @example {"FNAME":"Elly","LNAME":"Roger","COUNTRIES":["India","China"]}
    */
-  attributes?: Record<string, any>;
+  attributes?: Record<string, number | string | boolean | string[]>;
   /**
    * Set this field to blacklist the contact for emails (emailBlacklisted = true)
    * @example false
@@ -4455,11 +4455,11 @@ export interface CreateContact {
 
 export interface UpdateContact {
   /**
-   * Pass the set of attributes to be updated. **These attributes must be present in your account**. To update existing email address of a contact with the new one please pass EMAIL in attributes. For example, **{ "EMAIL":"newemail@domain.com", "FNAME":"Ellie", "LNAME":"Roger"}**.
+   * Pass the set of attributes to be updated. **These attributes must be present in your account**. To update existing email address of a contact with the new one please pass EMAIL in attributes. For example, **{ "EMAIL":"newemail@domain.com", "FNAME":"Ellie", "LNAME":"Roger", "COUNTRIES":["India","China"]}**.
    * The attribute's parameter should be passed in capital letter while updating a contact. Values that don't match the attribute type (e.g. text or string in a date attribute) will be ignored. Keep in mind transactional attributes can be updated the same way as normal attributes. Mobile Number in **SMS** field should be passed with proper country code. For example: **{"SMS":"+91xxxxxxxxxx"} or {"SMS":"0091xxxxxxxxxx"}**
-   * @example {"EMAIL":"newemail@domain.com","FNAME":"Ellie","LNAME":"Roger"}
+   * @example {"EMAIL":"newemail@domain.com","FNAME":"Ellie","LNAME":"Roger","COUNTRIES":["India","China"]}
    */
-  attributes?: Record<string, any>;
+  attributes?: Record<string, number | string | boolean | string[]>;
   /**
    * Pass your own Id to update ext_id of a contact.
    * @example "updateExternalId"
