@@ -8446,6 +8446,28 @@ export class Brevo<SecurityDataType extends unknown> extends HttpClient<Security
      * No description
      *
      * @tags Contacts
+     * @name DeleteMultiAttributeOptions
+     * @summary Delete a multiple-choice attribute option
+     * @request DELETE:/contacts/attributes/{attributeType}/{multipleChoiceAttribute}/{multipleChoiceAttributeOption}
+     * @secure
+     */
+    deleteMultiAttributeOptions: (
+      attributeType: "multiple-choice",
+      multipleChoiceAttribute: string,
+      multipleChoiceAttributeOption: string,
+      params: RequestParams = {},
+    ) =>
+      this.request<void, ErrorModel>({
+        path: `/contacts/attributes/${attributeType}/${multipleChoiceAttribute}/${multipleChoiceAttributeOption}`,
+        method: "DELETE",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Contacts
      * @name GetFolders
      * @summary Get all folders
      * @request GET:/contacts/folders
