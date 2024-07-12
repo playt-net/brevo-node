@@ -5986,6 +5986,19 @@ export interface Order {
    * @example "ST-21"
    */
   storeId?: string;
+  /** Identifies the contact associated with the order. */
+  identifiers?: {
+    /**
+     * ext_id associated with the order
+     * @example "ext_id_1"
+     */
+    ext_id?: string;
+    /**
+     * loyalty_subscription_id associated with the order
+     * @example "loyalty_id_1"
+     */
+    loyalty_subscription_id?: string;
+  };
   products: {
     /**
      * ID of the product.
