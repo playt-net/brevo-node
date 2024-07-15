@@ -319,9 +319,17 @@ export interface InviteAdminUser {
      * Feature name
      * @example "user_management"
      */
-    feature?: "my_plan" | "api" | "user_management" | "app_management";
+    feature?:
+      | "my_plan"
+      | "api"
+      | "user_management"
+      | "app_management"
+      | "sub_organization_groups"
+      | "create_sub_organizations"
+      | "manage_sub_organizations"
+      | "analytics";
     /** Permissions for a given feature */
-    permissions?: ("all" | "none")[];
+    permissions?: ("all" | "none" | "create")[];
   }[];
 }
 
@@ -10700,7 +10708,7 @@ export class Brevo<SecurityDataType extends unknown> extends HttpClient<Security
       }),
 
     /**
-     * @description `This endpoint allows you to invite a member to manage the Admin account Features and their respective permissions are as below: - `my_plan`: - "all" - `api`: - "none" - `user_management`: - "all" - `app_management` | Not available in ENTv2: - "all" **Note**: - If `all_features_access: false` then only privileges are required otherwise if `true` then it's assumed that all permissions will be there for the invited admin user.
+     * @description `This endpoint allows you to invite a member to manage the Admin account Features and their respective permissions are as below: - `my_plan`: - "all" - `api`: - "none" - `user_management`: - "all" - `app_management` | Not available in ENTv2: - "all" - `sub_organization_groups` - "create" - "edit_delete" - `create_sub_organizations` - "all" - `manage_sub_organizations` - "all" - `analytics` - "download_data" - "create_alerts" **Note**: - If `all_features_access: false` then only privileges are required otherwise if `true` then it's assumed that all permissions will be there for the invited admin user.
      *
      * @tags Master account
      * @name InviteAdminUser
