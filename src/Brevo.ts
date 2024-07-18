@@ -329,7 +329,7 @@ export interface InviteAdminUser {
       | "manage_sub_organizations"
       | "analytics";
     /** Permissions for a given feature */
-    permissions?: ("all" | "none" | "create")[];
+    permissions?: ("all" | "none" | "create" | "edit_delete" | "download_data" | "create_alerts")[];
   }[];
 }
 
@@ -3950,7 +3950,7 @@ export interface SendSmtpEmail {
   /** Tag your emails to find them more easily */
   tags?: string[];
   /**
-   * UTC date-time on which the email has to schedule (YYYY-MM-DDTHH:mm:ss.SSSZ). Prefer to pass your timezone in date-time format for scheduling. There can be an expected delay of +5 minutes in scheduled email delivery. **Please note this feature is currently a public beta**.
+   * UTC date-time on which the email has to schedule (YYYY-MM-DDTHH:mm:ss.SSSZ). Prefer to pass your timezone in date-time format for scheduling. There can be an expected delay of +5 minutes in scheduled email delivery.
    * @format date-time
    * @example "2022-04-05T12:30:00+02:00"
    */
