@@ -16,7 +16,7 @@ export type GetAccount = GetExtendedClient & {
      * Displays the plan type of the user
      * @example "subscription"
      */
-    type: "payAsYouGo" | "free" | "subscription" | "sms" | "reseller";
+    type: "payAsYouGo" | "free" | "subscription" | "sms";
     /**
      * This is the type of the credit, "Send Limit" is one of the possible types of credit of a user. "Send Limit" implies the total number of emails you can send to the subscribers in your account.
      * @example "sendLimit"
@@ -29,22 +29,17 @@ export type GetAccount = GetExtendedClient & {
      */
     credits: number;
     /**
-     * Date of the period from which the plan will start (only available for "subscription" and "reseller" plan type)
+     * Date of the period from which the plan will start (only available for "subscription" plan type)
      * @format date
      * @example "2016-12-31T00:00:00.000Z"
      */
     startDate?: string;
     /**
-     * Date of the period from which the plan will end (only available for "subscription" and "reseller" plan type)
+     * Date of the period from which the plan will end (only available for "subscription" plan type)
      * @format date
      * @example "2017-01-31T00:00:00.000Z"
      */
     endDate?: string;
-    /**
-     * Only in case of reseller account. It implies the total number of child accounts you can add to your account.
-     * @example 10
-     */
-    userLimit?: number;
   }[];
   /** Information about your transactional email account */
   relay: {
@@ -671,7 +666,6 @@ export interface ErrorModel {
     | "campaign_processing"
     | "campaign_sent"
     | "document_not_found"
-    | "reseller_permission_denied"
     | "not_enough_credits"
     | "permission_denied"
     | "duplicate_parameter"
@@ -1622,20 +1616,6 @@ export interface ScheduleSmtpEmail {
    * @example "5c6cfa04-eed9-42c2-8b5c-6d470d978e9d"
    */
   batchId?: string;
-}
-
-export interface CreateReseller {
-  /**
-   * AuthKey of Reseller child created
-   * @example "xkeysib-21881axxxxxcc92e04-mIrexxxx7z"
-   */
-  authKey: string;
-  /**
-   * Id of Reseller child created
-   * @format int64
-   * @example 1234567
-   */
-  id?: number;
 }
 
 export interface SendSms {
