@@ -193,6 +193,16 @@ export interface GetCorporateInvitedUsersList {
       my_plan?: string[];
       /** Apps management accessiblity | Not available in ENTv2 */
       apps_management?: string[];
+      /** Group creation, modification or deletion accessibility */
+      sub_organization_groups?: string[];
+      /** Autorization to create sub-organization in the admin account. If the user creating the sub-organization, belongs to a group, the user must choose a group at the sub-organization creation. */
+      create_sub_organizations?: string[];
+      /** Autorization to manage and access sub-organizations in the admin account. */
+      manage_sub_organizations?: string[];
+      /** Analytics dashboard accessibility */
+      analytics?: string[];
+      /** Security page accessibility */
+      security?: string[];
     };
   }[];
 }
@@ -231,6 +241,16 @@ export interface GetCorporateUserPermission {
     user_management?: string[];
     /** Permission on apps management */
     apps_management?: string[];
+    /** Permission on groups */
+    sub_organization_groups?: string[];
+    /** Permission on create sub-accounts */
+    create_sub_organizations?: string[];
+    /** Permission on manage sub-accounts */
+    manage_sub_organizations?: string[];
+    /** Permission on analytics */
+    analytics?: string[];
+    /** Permission on security */
+    security?: string[];
   };
 }
 
@@ -322,7 +342,8 @@ export interface InviteAdminUser {
       | "sub_organization_groups"
       | "create_sub_organizations"
       | "manage_sub_organizations"
-      | "analytics";
+      | "analytics"
+      | "security";
     /** Permissions for a given feature */
     permissions?: ("all" | "none" | "create" | "edit_delete" | "download_data" | "create_alerts")[];
   }[];
@@ -5362,12 +5383,12 @@ export interface SubAccountUpdatePlanRequest {
   /** Credit details to update */
   credits?: {
     /**
-     * Number of email credits
+     * Number of email credits | Pass the value -1 for unlimited emails in ENTv2 only
      * @format int64
      */
     email?: number;
     /**
-     * Number of SMS credits | available in ENT-v2 only
+     * Number of SMS credits | Pass the value -1 for unlimited SMS in ENTv2 only
      * @format float
      */
     sms?: number;
@@ -5385,7 +5406,7 @@ export interface SubAccountUpdatePlanRequest {
      */
     users?: number;
     /**
-     * Number of landing pages / Not required on ENTv2
+     * Number of landing pages
      * @format int64
      */
     landingPage?: number;
@@ -10688,7 +10709,7 @@ export class Brevo<SecurityDataType extends unknown> extends HttpClient<Security
       }),
 
     /**
-     * @description `This endpoint allows you to invite a member to manage the Admin account Features and their respective permissions are as below: - `my_plan`: - "all" - `api`: - "none" - `user_management`: - "all" - `app_management` | Not available in ENTv2: - "all" - `sub_organization_groups` - "create" - "edit_delete" - `create_sub_organizations` - "all" - `manage_sub_organizations` - "all" - `analytics` - "download_data" - "create_alerts" **Note**: - If `all_features_access: false` then only privileges are required otherwise if `true` then it's assumed that all permissions will be there for the invited admin user.
+     * @description `This endpoint allows you to invite a member to manage the Admin account Features and their respective permissions are as below: - `my_plan`: - "all" - `api`: - "none" - `user_management`: - "all" - `app_management` | Not available in ENTv2: - "all" - `sub_organization_groups` - "create" - "edit_delete" - `create_sub_organizations` - "all" - `manage_sub_organizations` - "all" - `analytics` - "download_data" - "create_alerts" - `security` - "all" **Note**: - If `all_features_access: false` then only privileges are required otherwise if `true` then it's assumed that all permissions will be there for the invited admin user.
      *
      * @tags Master account
      * @name InviteAdminUser
