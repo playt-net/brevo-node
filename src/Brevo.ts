@@ -195,9 +195,9 @@ export interface GetCorporateInvitedUsersList {
       apps_management?: string[];
       /** Group creation, modification or deletion accessibility */
       sub_organization_groups?: string[];
-      /** Autorization to create sub-organization in the admin account. If the user creating the sub-organization, belongs to a group, the user must choose a group at the sub-organization creation. */
+      /** Authorization to create sub-organization in the admin account. If the user creating the sub-organization, belongs to a group, the user must choose a group at the sub-organization creation. */
       create_sub_organizations?: string[];
-      /** Autorization to manage and access sub-organizations in the admin account. */
+      /** Authorization to manage and access sub-organizations in the admin account. */
       manage_sub_organizations?: string[];
       /** Analytics dashboard accessibility */
       analytics?: string[];
