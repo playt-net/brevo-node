@@ -3365,6 +3365,20 @@ export interface CreateEmailCampaign {
    * @example "6313436b9ad40e23b371d095"
    */
   updateFormId?: string;
+  /** To reduce your carbon footprint, set an expiration date for your email. If supported, it will be automatically deleted from the recipient’s inbox, saving storage space and energy. Learn more about setting an email expiration date. For reference , ``https://help.brevo.com/hc/en-us/articles/4413566705298-Create-an-email-campaign`` */
+  emailExpirationDate?: {
+    /**
+     * Duration of the email expiry. maximum duration can be 3600 days or 480 weeks or 120 months.
+     * @format int64
+     * @example 30
+     */
+    duration?: number;
+    /**
+     * unit of the duration
+     * @example "weeks"
+     */
+    unit?: "days" | "weeks" | "months";
+  };
 }
 
 export interface UpdateEmailCampaign {
@@ -3577,6 +3591,20 @@ export interface UpdateEmailCampaign {
    * @example "6313436b9ad40e23b371d095"
    */
   updateFormId?: string;
+  /** To reduce your carbon footprint, set an expiration date for your email. If supported, it will be automatically deleted from the recipient’s inbox, saving storage space and energy. */
+  emailExpirationDate?: {
+    /**
+     * Duration of the email expiry. maximum duration can be 3600 days or 480 weeks or 120 months.
+     * @format int64
+     * @example 30
+     */
+    duration?: number;
+    /**
+     * unit of the duration
+     * @example "weeks"
+     */
+    unit?: "days" | "weeks" | "months";
+  };
 }
 
 export interface GetSharedTemplateUrl {
