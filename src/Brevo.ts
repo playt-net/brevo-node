@@ -3370,6 +3370,8 @@ export interface CreateEmailCampaign {
     /**
      * Duration of the email expiry. maximum duration can be 3600 days or 480 weeks or 120 months.
      * @format int64
+     * @min 1
+     * @max 3600
      * @example 30
      */
     duration?: number;
@@ -3596,6 +3598,8 @@ export interface UpdateEmailCampaign {
     /**
      * Duration of the email expiry. maximum duration can be 3600 days or 480 weeks or 120 months.
      * @format int64
+     * @min 1
+     * @max 3600
      * @example 30
      */
     duration?: number;
