@@ -4174,8 +4174,7 @@ export interface CreateDoiContact {
 
 export interface CreateContact {
   /**
-   * Email address of the user. **Mandatory if "SMS" field is not passed in "attributes" parameter**. Mobile Number in **SMS** field should be passed with proper country code. For example:
-   * **{"SMS":"+91xxxxxxxxxx"}** or **{"SMS":"0091xxxxxxxxxx"}**
+   * Email address of the user. **Mandatory if "ext_id"  & "SMS" field is not passed.**
    * @format email
    * @example "elly@example.com"
    */
@@ -8260,7 +8259,7 @@ export class Brevo<SecurityDataType extends unknown> extends HttpClient<Security
       }),
 
     /**
-     * No description
+     * @description Creates new contacts on Brevo. Contacts can be created by passing either - <br><br> 1. email address of the contact (email_id),  <br> 2. phone number of the contact (to be passed as "SMS" field in "attributes" along with proper country code), For example- {"SMS":"+91xxxxxxxxxx"} or {"SMS":"0091xxxxxxxxxx"} <br> 3. ext_id <br>
      *
      * @tags Contacts
      * @name CreateContact
