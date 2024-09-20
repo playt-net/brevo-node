@@ -5358,6 +5358,32 @@ export interface SubAccountDetailsResponse {
          */
         remaining?: number;
       };
+      /** Whatsapp credits remaining on the sub-account */
+      whatsapp?: {
+        /**
+         * Quantity of whatsapp messaging limits provided
+         * @format int64
+         */
+        quantity?: number;
+        /**
+         * Available whatsapp messaging limits for use
+         * @format int64
+         */
+        remaining?: number;
+      };
+      /** externalFeeds credits remaining on the sub-account */
+      externalFeeds?: {
+        /**
+         * Quantity of externalFeeds messaging limits provided
+         * @format int64
+         */
+        quantity?: number;
+        /**
+         * Available externalFeeds messaging limits for use
+         * @format int64
+         */
+        remaining?: number;
+      };
     };
     /** Features available on the sub-account */
     features?: {
@@ -5408,7 +5434,7 @@ export interface SubAccountDetailsResponse {
 
 /**
  * Details of the plan to be changed
- * @example {"credits":{"email":5000,"sms":2000,"wpSubscribers":-1},"features":{"users":15,"landingPage":20,"inbox":10}}
+ * @example {"credits":{"email":5000,"sms":2000,"wpSubscribers":-1,"externalFeeds":1,"whatsapp":100},"features":{"users":15,"landingPage":20,"inbox":10}}
  */
 export interface SubAccountUpdatePlanRequest {
   /** Credit details to update */
@@ -5428,6 +5454,16 @@ export interface SubAccountUpdatePlanRequest {
      * @format int64
      */
     wpSubscribers?: number;
+    /**
+     * Number of externalFeeds credits, possible values are 0 or 1 |available in ENTv2 only
+     * @format int64
+     */
+    externalFeeds?: number;
+    /**
+     * Number of whatsapp credits | Pass the value -1 for unlimited whatsapp in ENTv2 only
+     * @format float
+     */
+    whatsapp?: number;
   };
   /** Features details to update */
   features?: {
@@ -10750,7 +10786,7 @@ export class Brevo<SecurityDataType extends unknown> extends HttpClient<Security
       }),
 
     /**
-     * @description `This endpoint allows you to invite a member to manage the Admin account Features and their respective permissions are as below: - `my_plan`: - "all" - `api`: - "none" - `user_management`: - "all" - `app_management` | Not available in ENTv2: - "all" - `sub_organization_groups` - "create" - "edit_delete" - `create_sub_organizations` - "all" - `manage_sub_organizations` - "all" - `analytics` - "download_data" - "create_alerts" - `security` - "all" **Note**: - If `all_features_access: false` then only privileges are required otherwise if `true` then it's assumed that all permissions will be there for the invited admin user.
+     * @description `This endpoint allows you to invite a member to manage the Admin account Features and their respective permissions are as below: - `my_plan`: - "all" - `api`: - "none" - `user_management`: - "all" - `app_management` | Not available in ENTv2: - "all" - `sub_organization_groups` - "create" - "edit_delete" - `create_sub_organizations` - "all" - `manage_sub_organizations` - "all" - `analytics` - "download_data" - "create_alerts" - "my_looks" - "explore_create" - `security` - "all" **Note**: - If `all_features_access: false` then only privileges are required otherwise if `true` then it's assumed that all permissions will be there for the invited admin user.
      *
      * @tags Master account
      * @name InviteAdminUser
@@ -10834,7 +10870,7 @@ export class Brevo<SecurityDataType extends unknown> extends HttpClient<Security
       }),
 
     /**
-     * No description
+     * @description This endpoint will provide the list of admin user permissions
      *
      * @tags Master account
      * @name GetCorporateUserPermission
@@ -10848,6 +10884,65 @@ export class Brevo<SecurityDataType extends unknown> extends HttpClient<Security
         method: "GET",
         secure: true,
         format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description This endpoint will allow you to change the permissions of Admin users of your Admin account
+     *
+     * @tags Master account
+     * @name UserPermissionsUpdate
+     * @summary Change admin user permissions
+     * @request PUT:/corporate/user/{email}/permissions
+     * @secure
+     */
+    userPermissionsUpdate: (
+      email: string,
+      data: {
+        /**
+         * All access to the features
+         * @example true
+         */
+        all_features_access: true | false;
+        privileges: {
+          /**
+           * feature name
+           * @example "user_management"
+           */
+          feature?:
+            | "user_management"
+            | "api"
+            | "my_plan"
+            | "apps_management"
+            | "analytics"
+            | "sub_organization_groups"
+            | "create_sub_organizations"
+            | "manage_sub_organizations"
+            | "security";
+          /**
+           * Permission for the feature
+           * @example ["all"]
+           */
+          permissions?: (
+            | "all"
+            | "none"
+            | "create"
+            | "edit_delete"
+            | "create_alerts"
+            | "download_data"
+            | "my_looks"
+            | "explore_create"
+          )[];
+        }[];
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<void, ErrorModel>({
+        path: `/corporate/user/${email}/permissions`,
+        method: "PUT",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
         ...params,
       }),
 
