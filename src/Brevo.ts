@@ -8389,7 +8389,7 @@ export class Brevo<SecurityDataType extends unknown> extends HttpClient<Security
       }),
 
     /**
-     * No description
+     * @description There are 2 ways to update a contact <br><br> Option 1- https://api.brevo.com/v3/contacts/{identifier} <br><br> Option 2- https://api.brevo.com/v3/contacts/{identifier}?identifierType={} <br> <br> Option 1 only works if identifierType is email_id (for EMAIL) or contact_id (for ID of the contact),where you can directly pass the value of EMAIL and ID of the contact.   <br><br> Option 2 works for all identifierType, use email_id for EMAIL attribute, contact_id for ID of the contact, ext_id for EXT_ID attribute, phone_id for SMS attribute, whatsapp_id for WHATSAPP attribute, landline_number_id for LANDLINE attribute
      *
      * @tags Contacts
      * @name UpdateContact
@@ -8397,10 +8397,19 @@ export class Brevo<SecurityDataType extends unknown> extends HttpClient<Security
      * @request PUT:/contacts/{identifier}
      * @secure
      */
-    updateContact: (identifier: string | number, data: UpdateContact, params: RequestParams = {}) =>
+    updateContact: (
+      identifier: string | number,
+      data: UpdateContact,
+      query?: {
+        /** email_id for Email, contact_id for ID of the contact, ext_id for EXT_ID attribute, phone_id for SMS attribute, whatsapp_id for WHATSAPP attribute, landline_number_id for LANDLINE attribute */
+        identifierType?: "email_id" | "contact_id" | "ext_id" | "phone_id" | "whatsapp_id" | "landline_number_id";
+      },
+      params: RequestParams = {},
+    ) =>
       this.request<void, ErrorModel>({
         path: `/contacts/${identifier}`,
         method: "PUT",
+        query: query,
         body: data,
         secure: true,
         type: ContentType.Json,
