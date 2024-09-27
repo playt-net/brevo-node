@@ -8364,7 +8364,7 @@ export class Brevo<SecurityDataType extends unknown> extends HttpClient<Security
       }),
 
     /**
-     * @description There are 2 ways to delete a contact <br><br> Option 1- https://api.brevo.com/v3/contacts/{identifier} <br><br> Option 2- https://api.brevo.com/v3/contacts/{identifier}?identifierType={} <br> <br> Option 1 only works if identifierType is email_id (for EMAIL) or contact_id (for ID of the contact),where you can directly pass the value of EMAIL and ID of the contact.   <br><br> Option 2 works for all identifierType, use email_id for EMAIL attribute, contact_id for ID of the contact, ext_id for EXT_ID attribute
+     * @description There are 2 ways to delete a contact <br><br> Option 1- https://api.brevo.com/v3/contacts/{identifier} <br><br> Option 2- https://api.brevo.com/v3/contacts/{identifier}?identifierType={} <br> <br> Option 1 only works if identifierType is email_id (for EMAIL) or contact_id (for ID of the contact),where you can directly pass the value of EMAIL and ID of the contact.   <br><br> Option 2 works for all identifierType, use email_id for EMAIL attribute, contact_id for ID of the contact, ext_id for EXT_ID attribute, phone_id for SMS attribute, whatsapp_id for WHATSAPP attribute, landline_number_id for LANDLINE_NUMBER attribute.
      *
      * @tags Contacts
      * @name DeleteContact
@@ -8375,8 +8375,8 @@ export class Brevo<SecurityDataType extends unknown> extends HttpClient<Security
     deleteContact: (
       identifier: string | number,
       query?: {
-        /** email_id for Email, contact_id for ID of the contact, ext_id for EXT_ID attribute */
-        identifierType?: "email_id" | "contact_id" | "ext_id";
+        /** email_id for Email, contact_id for ID of the contact, ext_id for EXT_ID attribute, phone_id for SMS attribute, whatsapp_id for WHATSAPP attribute, landline_number_id for LANDLINE_NUMBER attribute */
+        identifierType?: "email_id" | "contact_id" | "ext_id" | "phone_id" | "whatsapp_id" | "landline_number_id";
       },
       params: RequestParams = {},
     ) =>
