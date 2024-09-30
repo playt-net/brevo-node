@@ -16,7 +16,7 @@ export type GetAccount = GetExtendedClient & {
      * Displays the plan type of the user
      * @example "subscription"
      */
-    type: "payAsYouGo" | "free" | "subscription" | "sms" | "reseller";
+    type: "payAsYouGo" | "free" | "subscription" | "sms";
     /**
      * This is the type of the credit, "Send Limit" is one of the possible types of credit of a user. "Send Limit" implies the total number of emails you can send to the subscribers in your account.
      * @example "sendLimit"
@@ -29,22 +29,17 @@ export type GetAccount = GetExtendedClient & {
      */
     credits: number;
     /**
-     * Date of the period from which the plan will start (only available for "subscription" and "reseller" plan type)
+     * Date of the period from which the plan will start (only available for "subscription" plan type)
      * @format date
      * @example "2016-12-31T00:00:00.000Z"
      */
     startDate?: string;
     /**
-     * Date of the period from which the plan will end (only available for "subscription" and "reseller" plan type)
+     * Date of the period from which the plan will end (only available for "subscription" plan type)
      * @format date
      * @example "2017-01-31T00:00:00.000Z"
      */
     endDate?: string;
-    /**
-     * Only in case of reseller account. It implies the total number of child accounts you can add to your account.
-     * @example 10
-     */
-    userLimit?: number;
   }[];
   /** Information about your transactional email account */
   relay: {
@@ -198,6 +193,16 @@ export interface GetCorporateInvitedUsersList {
       my_plan?: string[];
       /** Apps management accessiblity | Not available in ENTv2 */
       apps_management?: string[];
+      /** Group creation, modification or deletion accessibility */
+      sub_organization_groups?: string[];
+      /** Authorization to create sub-organization in the admin account. If the user creating the sub-organization, belongs to a group, the user must choose a group at the sub-organization creation. */
+      create_sub_organizations?: string[];
+      /** Authorization to manage and access sub-organizations in the admin account. */
+      manage_sub_organizations?: string[];
+      /** Analytics dashboard accessibility */
+      analytics?: string[];
+      /** Security page accessibility */
+      security?: string[];
     };
   }[];
 }
@@ -236,6 +241,16 @@ export interface GetCorporateUserPermission {
     user_management?: string[];
     /** Permission on apps management */
     apps_management?: string[];
+    /** Permission on groups */
+    sub_organization_groups?: string[];
+    /** Permission on create sub-accounts */
+    create_sub_organizations?: string[];
+    /** Permission on manage sub-accounts */
+    manage_sub_organizations?: string[];
+    /** Permission on analytics */
+    analytics?: string[];
+    /** Permission on security */
+    security?: string[];
   };
 }
 
@@ -319,9 +334,18 @@ export interface InviteAdminUser {
      * Feature name
      * @example "user_management"
      */
-    feature?: "my_plan" | "api" | "user_management" | "app_management";
+    feature?:
+      | "my_plan"
+      | "api"
+      | "user_management"
+      | "app_management"
+      | "sub_organization_groups"
+      | "create_sub_organizations"
+      | "manage_sub_organizations"
+      | "analytics"
+      | "security";
     /** Permissions for a given feature */
-    permissions?: ("all" | "none")[];
+    permissions?: ("all" | "none" | "create" | "edit_delete" | "download_data" | "create_alerts")[];
   }[];
 }
 
@@ -357,7 +381,8 @@ export interface Inviteuser {
       | "phone"
       | "conversations"
       | "senders_domains_dedicated_ips"
-      | "push_notifications";
+      | "push_notifications"
+      | "companies";
     /** Permissions for a given feature */
     permissions?: (
       | "create_edit_delete"
@@ -376,8 +401,10 @@ export interface Inviteuser {
       | "access"
       | "assign"
       | "configure"
-      | "manage_owned_deals_tasks_companies"
-      | "manage_others_deals_tasks_companies"
+      | "manage_owned_deals_tasks"
+      | "manage_others_deals_tasks"
+      | "manage_owned_companies"
+      | "manage_others_companies"
       | "reports"
       | "senders_management"
       | "domains_management"
@@ -413,108 +440,6 @@ export interface UpdateUserResponse {
   invoice_id?: string;
 }
 
-export interface GetChildrenList {
-  /** Your children's account information */
-  children?: (GetChildInfo & {
-    /**
-     * ID of the child
-     * @format int64
-     * @example 187588
-     */
-    id?: number;
-  })[];
-  /**
-   * Number of child accounts
-   * @format int64
-   * @example 24
-   */
-  count?: number;
-}
-
-export type GetChildInfo = GetClient & {
-  /** Credits available for your child */
-  credits?: {
-    /**
-     * Email credits available for your child
-     * @format int64
-     * @example 98555
-     */
-    emailCredits?: number;
-    /**
-     * SMS credits available for your child
-     * @format int64
-     * @example 87556
-     */
-    smsCredits?: number;
-  };
-  /** Statistics about your child account activity */
-  statistics?: {
-    /**
-     * Overall emails sent for the previous month
-     * @format int64
-     * @example 7654
-     */
-    previousMonthTotalSent?: number;
-    /**
-     * Overall emails sent for current month
-     * @format int64
-     * @example 4566
-     */
-    currentMonthTotalSent?: number;
-    /**
-     * Overall emails sent for since the account exists
-     * @format int64
-     * @example 987554
-     */
-    totalSent?: number;
-  };
-  /**
-   * The encrypted password of child account
-   * @format password
-   * @example "abC01De2fGHI3jkL"
-   */
-  password: string;
-  /** IP(s) associated to a child account user */
-  ips?: string[];
-  /** API Keys associated to child account */
-  apiKeys?: {
-    v2: {
-      /**
-       * Name of the key for version 2
-       * @example "N˚2"
-       */
-      name: string;
-      /**
-       * API Key for version 2
-       * @example "nOpxxxxxy7z"
-       */
-      key: string;
-    }[];
-    v3?: {
-      /**
-       * Name of the key for version 3
-       * @example "N˚3"
-       */
-      name: string;
-      /**
-       * API Key for version 3
-       * @example "xkeysib-21881axxxxxcc92e04-mIrexxxx7z"
-       */
-      key: string;
-    }[];
-  };
-};
-
-export interface GetChildAccountCreationStatus {
-  /**
-   * Status of child account creation whether it is successfully created (exists) or not.
-   * @example true
-   */
-  childAccountCreated: boolean;
-}
-
-export type GetChildDomains = GetChildDomain[];
-
 export interface GetSsoToken {
   /**
    * Session token, it will remain valid for 15 days.
@@ -534,19 +459,6 @@ export interface CreateApiKeyResponse {
    * @example "xkeysib-21881axxxxxcc92e04-mIrexxxx7z"
    */
   key: string;
-}
-
-export interface GetChildDomain {
-  /**
-   * Sender domain
-   * @example "mycustomdomain.com"
-   */
-  domain?: string;
-  /**
-   * indicates whether a domain is verified or not
-   * @example true
-   */
-  active?: boolean;
 }
 
 export interface GetClient {
@@ -677,41 +589,6 @@ export interface GetDomainsList {
   }[];
 }
 
-export interface CreateChild {
-  /**
-   * Email address to create the child account
-   * @format email
-   * @example "josh.cruise@example.com"
-   */
-  email: string;
-  /**
-   * First name to use to create the child account
-   * @example "Josh"
-   */
-  firstName: string;
-  /**
-   * Last name to use to create the child account
-   * @example "Cruise"
-   */
-  lastName: string;
-  /**
-   * Company name to use to create the child account
-   * @example "Your Company"
-   */
-  companyName: string;
-  /**
-   * Password for the child account to login
-   * @format password
-   * @example "Pa55w0rd65"
-   */
-  password: string;
-  /**
-   * Language of the child account
-   * @example "en"
-   */
-  language?: "fr" | "es" | "pt" | "it" | "de" | "en";
-}
-
 export interface CreateSender {
   /**
    * From Name to use for the sender
@@ -798,59 +675,6 @@ export interface CreateDomain {
   name: string;
 }
 
-export interface UpdateChild {
-  /**
-   * New Email address to update the child account
-   * @format email
-   * @example "josh.cruise@example.com"
-   */
-  email?: string;
-  /**
-   * New First name to use to update the child account
-   * @example "Josh"
-   */
-  firstName?: string;
-  /**
-   * New Last name to use to update the child account
-   * @example "Cruise"
-   */
-  lastName?: string;
-  /**
-   * New Company name to use to update the child account
-   * @example "Your Company"
-   */
-  companyName?: string;
-  /**
-   * New password for the child account to login
-   * @format password
-   * @example "Pa55w0rd65"
-   */
-  password?: string;
-}
-
-export interface UpdateChildAccountStatus {
-  /**
-   * Status of Transactional Email Platform activation for your account (true=enabled, false=disabled)
-   * @example false
-   */
-  transactionalEmail?: boolean;
-  /**
-   * Status of Transactional SMS Platform activation for your account (true=enabled, false=disabled)
-   * @example false
-   */
-  transactionalSms?: boolean;
-  /**
-   * Status of Marketing Automation Platform activation for your account (true=enabled, false=disabled)
-   * @example true
-   */
-  marketingAutomation?: boolean;
-  /**
-   * Status of SMS Campaign Platform activation for your account (true=enabled, false=disabled)
-   * @example true
-   */
-  smsCampaign?: boolean;
-}
-
 export interface ErrorModel {
   /**
    * Error code displayed in case of a failure
@@ -863,7 +687,6 @@ export interface ErrorModel {
     | "campaign_processing"
     | "campaign_sent"
     | "document_not_found"
-    | "reseller_permission_denied"
     | "not_enough_credits"
     | "permission_denied"
     | "duplicate_parameter"
@@ -872,90 +695,13 @@ export interface ErrorModel {
     | "unauthorized"
     | "account_under_validation"
     | "not_acceptable"
-    | "bad_request";
+    | "bad_request"
+    | "unprocessable_entity";
   /**
    * Readable message associated to the failure
    * @example "POST Method is not allowed on this path"
    */
   message: string;
-}
-
-export interface RemainingCreditModel {
-  /** Credits remaining for child account */
-  child: {
-    /**
-     * SMS Credits remaining for child account
-     * @format double
-     * @example 500
-     */
-    sms: number;
-    /**
-     * Email Credits remaining for child account
-     * @format double
-     * @example 2000
-     */
-    email: number;
-  };
-  reseller: {
-    /**
-     * SMS Credits remaining for reseller account
-     * @format double
-     * @example 12900
-     */
-    sms: number;
-    /**
-     * Email Credits remaining for reseller account
-     * @format double
-     * @example 2000000
-     */
-    email: number;
-  };
-}
-
-export interface AddCredits {
-  /**
-   * **Required if email credits are empty.** SMS credits to be added to the child account
-   * @format int64
-   * @example 450
-   */
-  sms?: number;
-  /**
-   * **Required if sms credits are empty.** Email credits to be added to the child account
-   * @format int64
-   * @example 1200
-   */
-  email?: number;
-}
-
-export interface RemoveCredits {
-  /**
-   * **Required if email credits are empty.** SMS credits to be removed from the child account
-   * @format int64
-   * @example 300
-   */
-  sms?: number;
-  /**
-   * **Required if sms credits are empty.** Email credits to be removed from the child account
-   * @format int64
-   * @example 500
-   */
-  email?: number;
-}
-
-export interface AddChildDomain {
-  /**
-   * Sender domain to add for a specific child account
-   * @example "mychilddomain.com"
-   */
-  domain?: string;
-}
-
-export interface UpdateChildDomain {
-  /**
-   * Value for the sender domain that will replace the existing domain
-   * @example "myupdateddomain.com"
-   */
-  domain?: string;
 }
 
 export interface GetProcesses {
@@ -1120,10 +866,10 @@ export type GetExtendedCampaignOverview = GetCampaignOverview & {
   /** @example "EMAIL" */
   utmMedium?: string;
   /**
-   * utm id
-   * @example 10
+   * utm id activate
+   * @example true
    */
-  utmID?: number;
+  utmIDActive?: boolean;
   /**
    * Retrieved the status of test email sending. (true=Test email has been sent  false=Test email has not been sent)
    * @example true
@@ -1891,20 +1637,6 @@ export interface ScheduleSmtpEmail {
    * @example "5c6cfa04-eed9-42c2-8b5c-6d470d978e9d"
    */
   batchId?: string;
-}
-
-export interface CreateReseller {
-  /**
-   * AuthKey of Reseller child created
-   * @example "xkeysib-21881axxxxxcc92e04-mIrexxxx7z"
-   */
-  authKey: string;
-  /**
-   * Id of Reseller child created
-   * @format int64
-   * @example 1234567
-   */
-  id?: number;
 }
 
 export interface SendSms {
@@ -3633,6 +3365,22 @@ export interface CreateEmailCampaign {
    * @example "6313436b9ad40e23b371d095"
    */
   updateFormId?: string;
+  /** To reduce your carbon footprint, set an expiration date for your email. If supported, it will be automatically deleted from the recipient’s inbox, saving storage space and energy. Learn more about setting an email expiration date. For reference , ``https://help.brevo.com/hc/en-us/articles/4413566705298-Create-an-email-campaign`` */
+  emailExpirationDate?: {
+    /**
+     * Duration of the email expiry. maximum duration can be 3600 days or 480 weeks or 120 months.
+     * @format int64
+     * @min 1
+     * @max 3600
+     * @example 30
+     */
+    duration?: number;
+    /**
+     * unit of the duration
+     * @example "weeks"
+     */
+    unit?: "days" | "weeks" | "months";
+  };
 }
 
 export interface UpdateEmailCampaign {
@@ -3845,6 +3593,22 @@ export interface UpdateEmailCampaign {
    * @example "6313436b9ad40e23b371d095"
    */
   updateFormId?: string;
+  /** To reduce your carbon footprint, set an expiration date for your email. If supported, it will be automatically deleted from the recipient’s inbox, saving storage space and energy. */
+  emailExpirationDate?: {
+    /**
+     * Duration of the email expiry. maximum duration can be 3600 days or 480 weeks or 120 months.
+     * @format int64
+     * @min 1
+     * @max 3600
+     * @example 30
+     */
+    duration?: number;
+    /**
+     * unit of the duration
+     * @example "weeks"
+     */
+    unit?: "days" | "weeks" | "months";
+  };
 }
 
 export interface GetSharedTemplateUrl {
@@ -4219,7 +3983,7 @@ export interface SendSmtpEmail {
   /** Tag your emails to find them more easily */
   tags?: string[];
   /**
-   * UTC date-time on which the email has to schedule (YYYY-MM-DDTHH:mm:ss.SSSZ). Prefer to pass your timezone in date-time format for scheduling. There can be an expected delay of +5 minutes in scheduled email delivery. **Please note this feature is currently a public beta**.
+   * UTC date-time on which the email has to schedule (YYYY-MM-DDTHH:mm:ss.SSSZ). Prefer to pass your timezone in date-time format for scheduling. There can be an expected delay of +5 minutes in scheduled email delivery.
    * @format date-time
    * @example "2022-04-05T12:30:00+02:00"
    */
@@ -4386,10 +4150,10 @@ export interface CreateDoiContact {
    */
   email: string;
   /**
-   * Pass the set of attributes and their values. **These attributes must be present in your Brevo account**. For eg. **{'FNAME':'Elly', 'LNAME':'Roger'}**
-   * @example {"FNAME":"Elly","LNAME":"Roger"}
+   * Pass the set of attributes and their values. **These attributes must be present in your Brevo account**. For eg. **{'FNAME':'Elly', 'LNAME':'Roger', 'COUNTRIES':['India','China']}**
+   * @example {"FNAME":"Elly","LNAME":"Roger","COUNTRIES":["India","China"]}
    */
-  attributes?: Record<string, any>;
+  attributes?: Record<string, number | string | boolean | string[]>;
   /** Lists under user account where contact should be added */
   includeListIds: number[];
   /** Lists under user account where contact should not be added */
@@ -4410,8 +4174,7 @@ export interface CreateDoiContact {
 
 export interface CreateContact {
   /**
-   * Email address of the user. **Mandatory if "SMS" field is not passed in "attributes" parameter**. Mobile Number in **SMS** field should be passed with proper country code. For example:
-   * **{"SMS":"+91xxxxxxxxxx"}** or **{"SMS":"0091xxxxxxxxxx"}**
+   * Email address of the user. **Mandatory if "ext_id"  & "SMS" field is not passed.**
    * @format email
    * @example "elly@example.com"
    */
@@ -4423,10 +4186,10 @@ export interface CreateContact {
   ext_id?: string;
   /**
    * Pass the set of attributes and their values. The attribute's parameter should be passed in capital letter while creating a contact. Values that don't match the attribute type (e.g. text or string in a date attribute) will be ignored. **These attributes must be present in your Brevo account.**. For eg:
-   * **{"FNAME":"Elly", "LNAME":"Roger"}**
-   * @example {"FNAME":"Elly","LNAME":"Roger"}
+   * **{"FNAME":"Elly", "LNAME":"Roger", "COUNTRIES":["India","China"]}**
+   * @example {"FNAME":"Elly","LNAME":"Roger","COUNTRIES":["India","China"]}
    */
-  attributes?: Record<string, any>;
+  attributes?: Record<string, number | string | boolean | string[]>;
   /**
    * Set this field to blacklist the contact for emails (emailBlacklisted = true)
    * @example false
@@ -4451,11 +4214,11 @@ export interface CreateContact {
 
 export interface UpdateContact {
   /**
-   * Pass the set of attributes to be updated. **These attributes must be present in your account**. To update existing email address of a contact with the new one please pass EMAIL in attributes. For example, **{ "EMAIL":"newemail@domain.com", "FNAME":"Ellie", "LNAME":"Roger"}**.
+   * Pass the set of attributes to be updated. **These attributes must be present in your account**. To update existing email address of a contact with the new one please pass EMAIL in attributes. For example, **{ "EMAIL":"newemail@domain.com", "FNAME":"Ellie", "LNAME":"Roger", "COUNTRIES":["India","China"]}**.
    * The attribute's parameter should be passed in capital letter while updating a contact. Values that don't match the attribute type (e.g. text or string in a date attribute) will be ignored. Keep in mind transactional attributes can be updated the same way as normal attributes. Mobile Number in **SMS** field should be passed with proper country code. For example: **{"SMS":"+91xxxxxxxxxx"} or {"SMS":"0091xxxxxxxxxx"}**
-   * @example {"EMAIL":"newemail@domain.com","FNAME":"Ellie","LNAME":"Roger"}
+   * @example {"EMAIL":"newemail@domain.com","FNAME":"Ellie","LNAME":"Roger","COUNTRIES":["India","China"]}
    */
-  attributes?: Record<string, any>;
+  attributes?: Record<string, number | string | boolean | string[]>;
   /**
    * Pass your own Id to update ext_id of a contact.
    * @example "updateExternalId"
@@ -4557,13 +4320,18 @@ export interface CreateAttribute {
     label: string;
   }[];
   /**
+   * List of options you want to add for multiple-choice attribute. **Use only if the attribute's category is "normal" and attribute's type is "multiple-choice".** For example:
+   * **["USA","INDIA"]**
+   */
+  multiCategoryOptions?: string[];
+  /**
    * Type of the attribute. **Use only if the attribute's category is 'normal', 'category' or 'transactional'**
-   * Type **boolean** is only available if the category is **normal** attribute
+   * Type **boolean and multiple-choice** is only available if the category is **normal** attribute
    * Type **id** is only available if the category is **transactional** attribute
    * Type **category** is only available if the category is **category** attribute
    * @example "text"
    */
-  type?: "text" | "date" | "float" | "boolean" | "id" | "category";
+  type?: "text" | "date" | "float" | "boolean" | "id" | "category" | "multiple-choice";
 }
 
 export interface UpdateAttribute {
@@ -4588,6 +4356,11 @@ export interface UpdateAttribute {
      */
     label: string;
   }[];
+  /**
+   * Use this option to add multiple-choice attributes options only if the attribute's category is "normal". **This option is specifically designed for updating multiple-choice attributes**. For example:
+   * **["USA","INDIA"]**
+   */
+  multiCategoryOptions?: string[];
 }
 
 export interface CreateList {
@@ -5110,14 +4883,6 @@ export interface GetIpFromSender {
   weight: number;
 }
 
-export interface ManageIp {
-  /**
-   * Dedicated ID
-   * @example "123.65.8.22"
-   */
-  ip?: string;
-}
-
 export interface GetTransacEmailContent {
   /**
    * Email address to which transactional email has been sent
@@ -5593,6 +5358,32 @@ export interface SubAccountDetailsResponse {
          */
         remaining?: number;
       };
+      /** Whatsapp credits remaining on the sub-account */
+      whatsapp?: {
+        /**
+         * Quantity of whatsapp messaging limits provided
+         * @format int64
+         */
+        quantity?: number;
+        /**
+         * Available whatsapp messaging limits for use
+         * @format int64
+         */
+        remaining?: number;
+      };
+      /** externalFeeds credits remaining on the sub-account */
+      externalFeeds?: {
+        /**
+         * Quantity of externalFeeds messaging limits provided
+         * @format int64
+         */
+        quantity?: number;
+        /**
+         * Available externalFeeds messaging limits for use
+         * @format int64
+         */
+        remaining?: number;
+      };
     };
     /** Features available on the sub-account */
     features?: {
@@ -5643,18 +5434,18 @@ export interface SubAccountDetailsResponse {
 
 /**
  * Details of the plan to be changed
- * @example {"credits":{"email":5000,"sms":2000,"wpSubscribers":-1},"features":{"users":15,"landingPage":20,"inbox":10}}
+ * @example {"credits":{"email":5000,"sms":2000,"wpSubscribers":-1,"externalFeeds":1,"whatsapp":100},"features":{"users":15,"landingPage":20,"inbox":10}}
  */
 export interface SubAccountUpdatePlanRequest {
   /** Credit details to update */
   credits?: {
     /**
-     * Number of email credits
+     * Number of email credits | Pass the value -1 for unlimited emails in ENTv2 only
      * @format int64
      */
     email?: number;
     /**
-     * Number of SMS credits | available in ENT-v2 only
+     * Number of SMS credits | Pass the value -1 for unlimited SMS in ENTv2 only
      * @format float
      */
     sms?: number;
@@ -5663,6 +5454,16 @@ export interface SubAccountUpdatePlanRequest {
      * @format int64
      */
     wpSubscribers?: number;
+    /**
+     * Number of externalFeeds credits, possible values are 0 or 1 |available in ENTv2 only
+     * @format int64
+     */
+    externalFeeds?: number;
+    /**
+     * Number of whatsapp credits | Pass the value -1 for unlimited whatsapp in ENTv2 only
+     * @format float
+     */
+    whatsapp?: number;
   };
   /** Features details to update */
   features?: {
@@ -5672,7 +5473,7 @@ export interface SubAccountUpdatePlanRequest {
      */
     users?: number;
     /**
-     * Number of landing pages / Not required on ENTv2
+     * Number of landing pages
      * @format int64
      */
     landingPage?: number;
@@ -6256,6 +6057,24 @@ export interface Order {
    * @example 308.42
    */
   amount: number;
+  /**
+   * ID of store where the order is placed
+   * @example "ST-21"
+   */
+  storeId?: string;
+  /** Identifies the contact associated with the order. */
+  identifiers?: {
+    /**
+     * ext_id associated with the order
+     * @example "ext_id_1"
+     */
+    ext_id?: string;
+    /**
+     * loyalty_subscription_id associated with the order
+     * @example "loyalty_id_1"
+     */
+    loyalty_subscription_id?: string;
+  };
   products: {
     /**
      * ID of the product.
@@ -6300,6 +6119,11 @@ export interface Order {
      * @example "CA"
      */
     countryCode?: string;
+    /**
+     * Billing country name.
+     * @example "Canada"
+     */
+    country?: string;
     /**
      * Phone number to contact for further details about the order, Mandatory if "email" field is not passed.
      * @example "01559 032133"
@@ -6433,6 +6257,11 @@ export interface CreateUpdateCategory {
    * @example "2017-05-12T12:30:00.000Z"
    */
   deletedAt?: string;
+  /**
+   * category deleted from the shop's database
+   * @example true
+   */
+  isDeleted?: boolean;
 }
 
 export interface CreateUpdateCategories {
@@ -6457,6 +6286,11 @@ export interface CreateUpdateCategories {
    * @example "2017-05-12T12:30:00.000Z"
    */
   deletedAt?: string;
+  /**
+   * category deleted from the shop's database
+   * @example true
+   */
+  isDeleted?: boolean;
 }
 
 export interface CreateUpdateBatchCategory {
@@ -6634,6 +6468,11 @@ export interface CreateUpdateProduct {
   updateEnabled?: boolean;
   /** UTC date-time (YYYY-MM-DDTHH:mm:ss.SSSZ) of the product deleted from the shop's database */
   deletedAt?: string;
+  /**
+   * product deleted from the shop's database
+   * @example true
+   */
+  isDeleted?: boolean;
 }
 
 export interface CreateUpdateBatchProducts {
@@ -6692,6 +6531,11 @@ export interface CreateUpdateProducts {
   metaInfo?: Record<string, string | number>;
   /** UTC date-time (YYYY-MM-DDTHH:mm:ss.SSSZ) of the product deleted from the shop's database */
   deletedAt?: string;
+  /**
+   * product deleted from the shop's database
+   * @example true
+   */
+  isDeleted?: boolean;
 }
 
 export interface CreateProductModel {
@@ -7471,6 +7315,7 @@ export class HttpClient<SecurityDataType = unknown> {
  *   | 404  | Error. Object does not exist |
  *   | 405  | Error. Method not allowed  |
  *   | 406  | Error. Not Acceptable  |
+ *   | 422  | Error. Unprocessable Entity |
  */
 export class Brevo<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
   emailCampaigns = {
@@ -8450,7 +8295,7 @@ export class Brevo<SecurityDataType extends unknown> extends HttpClient<Security
       }),
 
     /**
-     * No description
+     * @description Creates new contacts on Brevo. Contacts can be created by passing either - <br><br> 1. email address of the contact (email_id),  <br> 2. phone number of the contact (to be passed as "SMS" field in "attributes" along with proper country code), For example- {"SMS":"+91xxxxxxxxxx"} or {"SMS":"0091xxxxxxxxxx"} <br> 3. ext_id <br>
      *
      * @tags Contacts
      * @name CreateContact
@@ -8489,7 +8334,7 @@ export class Brevo<SecurityDataType extends unknown> extends HttpClient<Security
       }),
 
     /**
-     * @description Along with the contact details, this endpoint will show the statistics of contact for the recent 90 days by default. To fetch the earlier statistics, please use Get contact campaign stats ``https://developers.brevo.com/reference/contacts-7#getcontactstats`` endpoint with the appropriate date ranges.
+     * @description There are 2 ways to get a contact <br><br> Option 1- https://api.brevo.com/v3/contacts/{identifier} <br><br> Option 2- https://api.brevo.com/v3/contacts/{identifier}?identifierType={} <br> <br> Option 1 only works if identifierType is email_id (for EMAIL), phone_id (for SMS) or contact_id (for ID of the contact),where you can directly pass the value of EMAIL, SMS and ID of the contact.   <br><br> Option 2 works for all identifierType, use email_id for EMAIL attribute, phone_id for SMS attribute, contact_id for ID of the contact, ext_id for EXT_ID attribute <br><br>Along with the contact details, this endpoint will show the statistics of contact for the recent 90 days by default. To fetch the earlier statistics, please use Get contact campaign stats ``https://developers.brevo.com/reference/contacts-7#getcontactstats`` endpoint with the appropriate date ranges.
      *
      * @tags Contacts
      * @name GetContactInfo
@@ -8500,6 +8345,8 @@ export class Brevo<SecurityDataType extends unknown> extends HttpClient<Security
     getContactInfo: (
       identifier: string | number,
       query?: {
+        /** email_id for Email, phone_id for SMS attribute, contact_id for ID of the contact, ext_id for EXT_ID attribute */
+        identifierType?: "email_id" | "phone_id" | "contact_id" | "ext_id";
         /** **Mandatory if endDate is used.** Starting date (YYYY-MM-DD) of the statistic events specific to campaigns. Must be lower than equal to endDate */
         startDate?: string;
         /** **Mandatory if startDate is used.** Ending date (YYYY-MM-DD) of the statistic events specific to campaigns. Must be greater than equal to startDate. */
@@ -8517,7 +8364,7 @@ export class Brevo<SecurityDataType extends unknown> extends HttpClient<Security
       }),
 
     /**
-     * No description
+     * @description There are 2 ways to delete a contact <br><br> Option 1- https://api.brevo.com/v3/contacts/{identifier} <br><br> Option 2- https://api.brevo.com/v3/contacts/{identifier}?identifierType={} <br> <br> Option 1 only works if identifierType is email_id (for EMAIL) or contact_id (for ID of the contact),where you can directly pass the value of EMAIL and ID of the contact.   <br><br> Option 2 works for all identifierType, use email_id for EMAIL attribute, contact_id for ID of the contact, ext_id for EXT_ID attribute, phone_id for SMS attribute, whatsapp_id for WHATSAPP attribute, landline_number_id for LANDLINE_NUMBER attribute.
      *
      * @tags Contacts
      * @name DeleteContact
@@ -8525,16 +8372,24 @@ export class Brevo<SecurityDataType extends unknown> extends HttpClient<Security
      * @request DELETE:/contacts/{identifier}
      * @secure
      */
-    deleteContact: (identifier: string | number, params: RequestParams = {}) =>
+    deleteContact: (
+      identifier: string | number,
+      query?: {
+        /** email_id for Email, contact_id for ID of the contact, ext_id for EXT_ID attribute, phone_id for SMS attribute, whatsapp_id for WHATSAPP attribute, landline_number_id for LANDLINE_NUMBER attribute */
+        identifierType?: "email_id" | "contact_id" | "ext_id" | "phone_id" | "whatsapp_id" | "landline_number_id";
+      },
+      params: RequestParams = {},
+    ) =>
       this.request<void, ErrorModel>({
         path: `/contacts/${identifier}`,
         method: "DELETE",
+        query: query,
         secure: true,
         ...params,
       }),
 
     /**
-     * No description
+     * @description There are 2 ways to update a contact <br><br> Option 1- https://api.brevo.com/v3/contacts/{identifier} <br><br> Option 2- https://api.brevo.com/v3/contacts/{identifier}?identifierType={} <br> <br> Option 1 only works if identifierType is email_id (for EMAIL) or contact_id (for ID of the contact),where you can directly pass the value of EMAIL and ID of the contact.   <br><br> Option 2 works for all identifierType, use email_id for EMAIL attribute, contact_id for ID of the contact, ext_id for EXT_ID attribute, phone_id for SMS attribute, whatsapp_id for WHATSAPP attribute, landline_number_id for LANDLINE attribute
      *
      * @tags Contacts
      * @name UpdateContact
@@ -8542,10 +8397,19 @@ export class Brevo<SecurityDataType extends unknown> extends HttpClient<Security
      * @request PUT:/contacts/{identifier}
      * @secure
      */
-    updateContact: (identifier: string | number, data: UpdateContact, params: RequestParams = {}) =>
+    updateContact: (
+      identifier: string | number,
+      data: UpdateContact,
+      query?: {
+        /** email_id for Email, contact_id for ID of the contact, ext_id for EXT_ID attribute, phone_id for SMS attribute, whatsapp_id for WHATSAPP attribute, landline_number_id for LANDLINE attribute */
+        identifierType?: "email_id" | "contact_id" | "ext_id" | "phone_id" | "whatsapp_id" | "landline_number_id";
+      },
+      params: RequestParams = {},
+    ) =>
       this.request<void, ErrorModel>({
         path: `/contacts/${identifier}`,
         method: "PUT",
+        query: query,
         body: data,
         secure: true,
         type: ContentType.Json,
@@ -8627,7 +8491,7 @@ export class Brevo<SecurityDataType extends unknown> extends HttpClient<Security
      * @secure
      */
     updateAttribute: (
-      attributeCategory: "category" | "calculated" | "global",
+      attributeCategory: "category" | "calculated" | "global" | "normal",
       attributeName: string,
       data: UpdateAttribute,
       params: RequestParams = {},
@@ -8681,6 +8545,28 @@ export class Brevo<SecurityDataType extends unknown> extends HttpClient<Security
     ) =>
       this.request<void, ErrorModel>({
         path: `/contacts/attributes/${attributeCategory}/${attributeName}`,
+        method: "DELETE",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Contacts
+     * @name DeleteMultiAttributeOptions
+     * @summary Delete a multiple-choice attribute option
+     * @request DELETE:/contacts/attributes/{attributeType}/{multipleChoiceAttribute}/{multipleChoiceAttributeOption}
+     * @secure
+     */
+    deleteMultiAttributeOptions: (
+      attributeType: "multiple-choice",
+      multipleChoiceAttribute: string,
+      multipleChoiceAttributeOption: string,
+      params: RequestParams = {},
+    ) =>
+      this.request<void, ErrorModel>({
+        path: `/contacts/attributes/${attributeType}/${multipleChoiceAttribute}/${multipleChoiceAttributeOption}`,
         method: "DELETE",
         secure: true,
         ...params,
@@ -10116,329 +10002,6 @@ export class Brevo<SecurityDataType extends unknown> extends HttpClient<Security
         ...params,
       }),
   };
-  reseller = {
-    /**
-     * No description
-     *
-     * @tags Reseller
-     * @name GetResellerChilds
-     * @summary Get the list of all children accounts
-     * @request GET:/reseller/children
-     * @secure
-     */
-    getResellerChilds: (
-      query?: {
-        /**
-         * Number of documents for child accounts information per page
-         * @format int64
-         * @min 0
-         * @max 20
-         * @default 10
-         */
-        limit?: number;
-        /**
-         * Index of the first document in the page
-         * @format int64
-         * @default 0
-         */
-        offset?: number;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.request<GetChildrenList, ErrorModel>({
-        path: `/reseller/children`,
-        method: "GET",
-        query: query,
-        secure: true,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Reseller
-     * @name CreateResellerChild
-     * @summary Creates a reseller child
-     * @request POST:/reseller/children
-     * @secure
-     */
-    createResellerChild: (data?: CreateChild, params: RequestParams = {}) =>
-      this.request<CreateReseller, ErrorModel>({
-        path: `/reseller/children`,
-        method: "POST",
-        body: data,
-        secure: true,
-        type: ContentType.Json,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Reseller
-     * @name GetChildInfo
-     * @summary Get a child account's details
-     * @request GET:/reseller/children/{childIdentifier}
-     * @secure
-     */
-    getChildInfo: (childIdentifier: string, params: RequestParams = {}) =>
-      this.request<GetChildInfo, ErrorModel>({
-        path: `/reseller/children/${childIdentifier}`,
-        method: "GET",
-        secure: true,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Reseller
-     * @name UpdateResellerChild
-     * @summary Update info of reseller's child based on the child identifier supplied
-     * @request PUT:/reseller/children/{childIdentifier}
-     * @secure
-     */
-    updateResellerChild: (childIdentifier: string, data: UpdateChild, params: RequestParams = {}) =>
-      this.request<void, ErrorModel>({
-        path: `/reseller/children/${childIdentifier}`,
-        method: "PUT",
-        body: data,
-        secure: true,
-        type: ContentType.Json,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Reseller
-     * @name DeleteResellerChild
-     * @summary Delete a single reseller child based on the child identifier supplied
-     * @request DELETE:/reseller/children/{childIdentifier}
-     * @secure
-     */
-    deleteResellerChild: (childIdentifier: string, params: RequestParams = {}) =>
-      this.request<void, ErrorModel>({
-        path: `/reseller/children/${childIdentifier}`,
-        method: "DELETE",
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Reseller
-     * @name UpdateChildAccountStatus
-     * @summary Update info of reseller's child account status based on the identifier supplied
-     * @request PUT:/reseller/children/{childIdentifier}/accountStatus
-     * @secure
-     */
-    updateChildAccountStatus: (childIdentifier: string, data: UpdateChildAccountStatus, params: RequestParams = {}) =>
-      this.request<void, ErrorModel>({
-        path: `/reseller/children/${childIdentifier}/accountStatus`,
-        method: "PUT",
-        body: data,
-        secure: true,
-        type: ContentType.Json,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Reseller
-     * @name GetChildAccountCreationStatus
-     * @summary Get the status of a reseller's child account creation, whether it is successfully created (exists) or not based on the childIdentifier supplied
-     * @request GET:/reseller/children/{childIdentifier}/accountCreationStatus
-     * @secure
-     */
-    getChildAccountCreationStatus: (childIdentifier: string, params: RequestParams = {}) =>
-      this.request<GetChildAccountCreationStatus, ErrorModel>({
-        path: `/reseller/children/${childIdentifier}/accountCreationStatus`,
-        method: "GET",
-        secure: true,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Reseller
-     * @name AssociateIpToChild
-     * @summary Associate a dedicated IP to the child
-     * @request POST:/reseller/children/{childIdentifier}/ips/associate
-     * @secure
-     */
-    associateIpToChild: (childIdentifier: string, data: ManageIp, params: RequestParams = {}) =>
-      this.request<void, ErrorModel>({
-        path: `/reseller/children/${childIdentifier}/ips/associate`,
-        method: "POST",
-        body: data,
-        secure: true,
-        type: ContentType.Json,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Reseller
-     * @name DissociateIpFromChild
-     * @summary Dissociate a dedicated IP to the child
-     * @request POST:/reseller/children/{childIdentifier}/ips/dissociate
-     * @secure
-     */
-    dissociateIpFromChild: (childIdentifier: string, data: ManageIp, params: RequestParams = {}) =>
-      this.request<void, ErrorModel>({
-        path: `/reseller/children/${childIdentifier}/ips/dissociate`,
-        method: "POST",
-        body: data,
-        secure: true,
-        type: ContentType.Json,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Reseller
-     * @name AddCredits
-     * @summary Add Email and/or SMS credits to a specific child account
-     * @request POST:/reseller/children/{childIdentifier}/credits/add
-     * @secure
-     */
-    addCredits: (childIdentifier: string, data: AddCredits, params: RequestParams = {}) =>
-      this.request<RemainingCreditModel, ErrorModel>({
-        path: `/reseller/children/${childIdentifier}/credits/add`,
-        method: "POST",
-        body: data,
-        secure: true,
-        type: ContentType.Json,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Reseller
-     * @name RemoveCredits
-     * @summary Remove Email and/or SMS credits from a specific child account
-     * @request POST:/reseller/children/{childIdentifier}/credits/remove
-     * @secure
-     */
-    removeCredits: (childIdentifier: string, data: RemoveCredits, params: RequestParams = {}) =>
-      this.request<RemainingCreditModel, ErrorModel>({
-        path: `/reseller/children/${childIdentifier}/credits/remove`,
-        method: "POST",
-        body: data,
-        secure: true,
-        type: ContentType.Json,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Reseller
-     * @name GetChildDomains
-     * @summary Get all sender domains for a specific child account
-     * @request GET:/reseller/children/{childIdentifier}/domains
-     * @secure
-     */
-    getChildDomains: (childIdentifier: string, params: RequestParams = {}) =>
-      this.request<GetChildDomains, ErrorModel>({
-        path: `/reseller/children/${childIdentifier}/domains`,
-        method: "GET",
-        secure: true,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Reseller
-     * @name CreateChildDomain
-     * @summary Create a domain for a child account
-     * @request POST:/reseller/children/{childIdentifier}/domains
-     * @secure
-     */
-    createChildDomain: (childIdentifier: string, data: AddChildDomain, params: RequestParams = {}) =>
-      this.request<void, ErrorModel>({
-        path: `/reseller/children/${childIdentifier}/domains`,
-        method: "POST",
-        body: data,
-        secure: true,
-        type: ContentType.Json,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Reseller
-     * @name UpdateChildDomain
-     * @summary Update the sender domain of reseller's child based on the childIdentifier and domainName passed
-     * @request PUT:/reseller/children/{childIdentifier}/domains/{domainName}
-     * @secure
-     */
-    updateChildDomain: (
-      childIdentifier: string,
-      domainName: string,
-      data: UpdateChildDomain,
-      params: RequestParams = {},
-    ) =>
-      this.request<void, ErrorModel>({
-        path: `/reseller/children/${childIdentifier}/domains/${domainName}`,
-        method: "PUT",
-        body: data,
-        secure: true,
-        type: ContentType.Json,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Reseller
-     * @name DeleteChildDomain
-     * @summary Delete the sender domain of the reseller child based on the childIdentifier and domainName passed
-     * @request DELETE:/reseller/children/{childIdentifier}/domains/{domainName}
-     * @secure
-     */
-    deleteChildDomain: (childIdentifier: string, domainName: string, params: RequestParams = {}) =>
-      this.request<void, ErrorModel>({
-        path: `/reseller/children/${childIdentifier}/domains/${domainName}`,
-        method: "DELETE",
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * @description It returns a session [token] which will remain valid for a short period of time. A child account will be able to access a white-labeled section by using the following url pattern => https:/email.mydomain.com/login/sso?token=[token]
-     *
-     * @tags Reseller
-     * @name GetSsoToken
-     * @summary Get session token to access Brevo (SSO)
-     * @request GET:/reseller/children/{childIdentifier}/auth
-     * @secure
-     */
-    getSsoToken: (childIdentifier: string, params: RequestParams = {}) =>
-      this.request<GetSsoToken, ErrorModel>({
-        path: `/reseller/children/${childIdentifier}/auth`,
-        method: "GET",
-        secure: true,
-        format: "json",
-        ...params,
-      }),
-  };
   account = {
     /**
      * No description
@@ -10573,7 +10136,7 @@ export class Brevo<SecurityDataType extends unknown> extends HttpClient<Security
       }),
 
     /**
-     * @description `Feature` - A Feature represents a specific functionality like Email campaign, Deals, Calls, Automations, etc. on Brevo. While inviting a user, determine which feature you want to manage access to. You must specify the feature accurately to avoid errors. `Permission` - A Permission defines the level of access or control a user has over a specific feature. While inviting user, decide on the permission level required for the selected feature. Make sure the chosen permission is related to the selected feature. Features and their respective permissions are as below: - `email_campaigns`: - "create_edit_delete" - "send_schedule_suspend" - `sms_campaigns`: - "create_edit_delete" - "send_schedule_suspend" - `contacts`: - "view" - "create_edit_delete" - "import" - "export" - "list_and_attributes" - "forms" - `templates`: - "create_edit_delete" - "activate_deactivate" - `workflows`: - "create_edit_delete" - "activate_deactivate_pause" - "settings" - `facebook_ads`: - "create_edit_delete" - "schedule_pause" - `landing_pages`: - "all" - `transactional_emails`: - "settings" - "logs" - `smtp_api`: - "smtp" - "api_keys" - "authorized_ips" - `user_management`: - "all" - `sales_platform`: - "manage_owned_deals_tasks_companies" - "manage_others_deals_tasks_companies" - "reports" - "settings" - `phone`: - "all" - `conversations`: - "access" - "assign" - "configure" - `senders_domains_dedicated_ips`: - "senders_management" - "domains_management" - "dedicated_ips_management" - `push_notifications`: - "view" - "create_edit_delete" - "send" - "settings" **Note**: - If `all_features_access: false` then only privileges are required otherwise if `true` then it's assumed that all permissions will be there for the invited user. - The availability of feature and its permission depends on your current plan. Please select the features and permissions accordingly.
+     * @description `Feature` - A Feature represents a specific functionality like Email campaign, Deals, Calls, Automations, etc. on Brevo. While inviting a user, determine which feature you want to manage access to. You must specify the feature accurately to avoid errors. `Permission` - A Permission defines the level of access or control a user has over a specific feature. While inviting user, decide on the permission level required for the selected feature. Make sure the chosen permission is related to the selected feature. Features and their respective permissions are as below: - `email_campaigns`: - "create_edit_delete" - "send_schedule_suspend" - `sms_campaigns`: - "create_edit_delete" - "send_schedule_suspend" - `contacts`: - "view" - "create_edit_delete" - "import" - "export" - "list_and_attributes" - "forms" - `templates`: - "create_edit_delete" - "activate_deactivate" - `workflows`: - "create_edit_delete" - "activate_deactivate_pause" - "settings" - `facebook_ads`: - "create_edit_delete" - "schedule_pause" - `landing_pages`: - "all" - `transactional_emails`: - "settings" - "logs" - `smtp_api`: - "smtp" - "api_keys" - "authorized_ips" - `user_management`: - "all" - `sales_platform`: - "manage_owned_deals_tasks" - "manage_others_deals_tasks" - "reports" - "settings" - `phone`: - "all" - `conversations`: - "access" - "assign" - "configure" - `senders_domains_dedicated_ips`: - "senders_management" - "domains_management" - "dedicated_ips_management" - `push_notifications`: - "view" - "create_edit_delete" - "send" - "settings" - `companies`: - "manage_owned_companies" - "manage_other_companies" - "settings" **Note**: - If `all_features_access: false` then only privileges are required otherwise if `true` then it's assumed that all permissions will be there for the invited user. - The availability of feature and its permission depends on your current plan. Please select the features and permissions accordingly.
      *
      * @tags User
      * @name Inviteuser
@@ -10593,7 +10156,7 @@ export class Brevo<SecurityDataType extends unknown> extends HttpClient<Security
       }),
 
     /**
-     * @description `Feature` - A Feature represents a specific functionality like Email campaign, Deals, Calls, Automations, etc. on Brevo. While inviting a user, determine which feature you want to manage access to. You must specify the feature accurately to avoid errors. `Permission` - A Permission defines the level of access or control a user has over a specific feature. While inviting user, decide on the permission level required for the selected feature. Make sure the chosen permission is related to the selected feature. Features and their respective permissions are as below: - `email_campaigns`: - "create_edit_delete" - "send_schedule_suspend" - `sms_campaigns`: - "create_edit_delete" - "send_schedule_suspend" - `contacts`: - "view" - "create_edit_delete" - "import" - "export" - "list_and_attributes" - "forms" - `templates`: - "create_edit_delete" - "activate_deactivate" - `workflows`: - "create_edit_delete" - "activate_deactivate_pause" - "settings" - `facebook_ads`: - "create_edit_delete" - "schedule_pause" - `landing_pages`: - "all" - `transactional_emails`: - "settings" - "logs" - `smtp_api`: - "smtp" - "api_keys" - "authorized_ips" - `user_management`: - "all" - `sales_platform`: - "manage_owned_deals_tasks_companies" - "manage_others_deals_tasks_companies" - "reports" - "settings" - `phone`: - "all" - `conversations`: - "access" - "assign" - "configure" - `senders_domains_dedicated_ips`: - "senders_management" - "domains_management" - "dedicated_ips_management" - `push_notifications`: - "view" - "create_edit_delete" - "send" - "settings" **Note**: - The privileges array remains the same as in the send invitation; the user simply needs to provide the permissions that need to be updated. - The availability of feature and its permission depends on your current plan. Please select the features and permissions accordingly.
+     * @description `Feature` - A Feature represents a specific functionality like Email campaign, Deals, Calls, Automations, etc. on Brevo. While inviting a user, determine which feature you want to manage access to. You must specify the feature accurately to avoid errors. `Permission` - A Permission defines the level of access or control a user has over a specific feature. While inviting user, decide on the permission level required for the selected feature. Make sure the chosen permission is related to the selected feature. Features and their respective permissions are as below: - `email_campaigns`: - "create_edit_delete" - "send_schedule_suspend" - `sms_campaigns`: - "create_edit_delete" - "send_schedule_suspend" - `contacts`: - "view" - "create_edit_delete" - "import" - "export" - "list_and_attributes" - "forms" - `templates`: - "create_edit_delete" - "activate_deactivate" - `workflows`: - "create_edit_delete" - "activate_deactivate_pause" - "settings" - `facebook_ads`: - "create_edit_delete" - "schedule_pause" - `landing_pages`: - "all" - `transactional_emails`: - "settings" - "logs" - `smtp_api`: - "smtp" - "api_keys" - "authorized_ips" - `user_management`: - "all" - `sales_platform`: - "manage_owned_deals_tasks" - "manage_others_deals_tasks" - "reports" - "settings" - `phone`: - "all" - `conversations`: - "access" - "assign" - "configure" - `senders_domains_dedicated_ips`: - "senders_management" - "domains_management" - "dedicated_ips_management" - `push_notifications`: - "view" - "create_edit_delete" - "send" - "settings" - `companies`: - "manage_owned_companies" - "manage_other_companies" - "settings" **Note**: - The privileges array remains the same as in the send invitation; the user simply needs to provide the permissions that need to be updated. - The availability of feature and its permission depends on your current plan. Please select the features and permissions accordingly.
      *
      * @tags User
      * @name EditUserPermission
@@ -11104,12 +10667,12 @@ export class Brevo<SecurityDataType extends unknown> extends HttpClient<Security
      * @description This endpoint allows to dissociate an IP from sub-accounts
      *
      * @tags Master account
-     * @name SubAccountIpDissociateDelete
+     * @name SubAccountIpDissociateUpdate
      * @summary Dissociate an IP to sub-accounts
-     * @request DELETE:/corporate/subAccount/ip/dissociate
+     * @request PUT:/corporate/subAccount/ip/dissociate
      * @secure
      */
-    subAccountIpDissociateDelete: (
+    subAccountIpDissociateUpdate: (
       data: {
         /**
          * IP address
@@ -11126,7 +10689,7 @@ export class Brevo<SecurityDataType extends unknown> extends HttpClient<Security
     ) =>
       this.request<void, ErrorModel>({
         path: `/corporate/subAccount/ip/dissociate`,
-        method: "DELETE",
+        method: "PUT",
         body: data,
         secure: true,
         type: ContentType.Json,
@@ -11232,7 +10795,7 @@ export class Brevo<SecurityDataType extends unknown> extends HttpClient<Security
       }),
 
     /**
-     * @description `This endpoint allows you to invite a member to manage the Admin account Features and their respective permissions are as below: - `my_plan`: - "all" - `api`: - "none" - `user_management`: - "all" - `app_management` | Not available in ENTv2: - "all" **Note**: - If `all_features_access: false` then only privileges are required otherwise if `true` then it's assumed that all permissions will be there for the invited admin user.
+     * @description `This endpoint allows you to invite a member to manage the Admin account Features and their respective permissions are as below: - `my_plan`: - "all" - `api`: - "none" - `user_management`: - "all" - `app_management` | Not available in ENTv2: - "all" - `sub_organization_groups` - "create" - "edit_delete" - `create_sub_organizations` - "all" - `manage_sub_organizations` - "all" - `analytics` - "download_data" - "create_alerts" - "my_looks" - "explore_create" - `security` - "all" **Note**: - If `all_features_access: false` then only privileges are required otherwise if `true` then it's assumed that all permissions will be there for the invited admin user.
      *
      * @tags Master account
      * @name InviteAdminUser
@@ -11316,7 +10879,7 @@ export class Brevo<SecurityDataType extends unknown> extends HttpClient<Security
       }),
 
     /**
-     * No description
+     * @description This endpoint will provide the list of admin user permissions
      *
      * @tags Master account
      * @name GetCorporateUserPermission
@@ -11330,6 +10893,65 @@ export class Brevo<SecurityDataType extends unknown> extends HttpClient<Security
         method: "GET",
         secure: true,
         format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description This endpoint will allow you to change the permissions of Admin users of your Admin account
+     *
+     * @tags Master account
+     * @name UserPermissionsUpdate
+     * @summary Change admin user permissions
+     * @request PUT:/corporate/user/{email}/permissions
+     * @secure
+     */
+    userPermissionsUpdate: (
+      email: string,
+      data: {
+        /**
+         * All access to the features
+         * @example true
+         */
+        all_features_access: true | false;
+        privileges: {
+          /**
+           * feature name
+           * @example "user_management"
+           */
+          feature?:
+            | "user_management"
+            | "api"
+            | "my_plan"
+            | "apps_management"
+            | "analytics"
+            | "sub_organization_groups"
+            | "create_sub_organizations"
+            | "manage_sub_organizations"
+            | "security";
+          /**
+           * Permission for the feature
+           * @example ["all"]
+           */
+          permissions?: (
+            | "all"
+            | "none"
+            | "create"
+            | "edit_delete"
+            | "create_alerts"
+            | "download_data"
+            | "my_looks"
+            | "explore_create"
+          )[];
+        }[];
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<void, ErrorModel>({
+        path: `/corporate/user/${email}/permissions`,
+        method: "PUT",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
         ...params,
       }),
 
@@ -11603,6 +11225,64 @@ export class Brevo<SecurityDataType extends unknown> extends HttpClient<Security
         body: data,
         secure: true,
         type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
+     * @description Import companies from a CSV file with mapping options.
+     *
+     * @tags Companies
+     * @name ImportCreate
+     * @summary Import companies(creation and updation)
+     * @request POST:/companies/import
+     * @secure
+     */
+    importCreate: (
+      data: {
+        /**
+         * The CSV file to upload.The file should have the first row as the mapping attribute. Some default attribute names are
+         * (a) company_id [brevo mongoID to update deals]
+         * (b) associated_contact
+         * (c) associated_deal
+         * (f) any other attribute with internal name
+         * @format binary
+         * @example false
+         */
+        file?: File;
+        /**
+         * The mapping options in JSON format. Here is an example of the JSON structure:
+         * ```json
+         * {
+         *   "link_entities": true, // Determines whether to link related entities during the import process
+         *   "unlink_entities": false, // Determines whether to unlink related entities during the import process
+         *   "update_existing_records": true, // Determines whether to update based on company ID or treat every row as create
+         *   "unset_empty_attributes": false // Determines whether to unset a specific attribute during update if the values input is blank
+         * }
+         * ```
+         */
+        mapping?: object;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          /**
+           * The ID of the import process
+           * @example 50
+           */
+          processId?: number;
+        },
+        {
+          /** @example "Bad request : With reason" */
+          message?: string;
+        }
+      >({
+        path: `/companies/import`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.FormData,
+        format: "json",
         ...params,
       }),
   };
@@ -11896,6 +11576,64 @@ export class Brevo<SecurityDataType extends unknown> extends HttpClient<Security
         body: data,
         secure: true,
         type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
+     * @description Import deals from a CSV file with mapping options.
+     *
+     * @tags Deals
+     * @name DealsImportCreate
+     * @summary Import deals(creation and updation)
+     * @request POST:/crm/deals/import
+     * @secure
+     */
+    dealsImportCreate: (
+      data: {
+        /**
+         * The CSV file to upload.The file should have the first row as the mapping attribute. Some default attribute names are
+         * (a) deal_id [brevo mongoID to update deals]
+         * (b) associated_contact
+         * (c) associated_company
+         * (f) any other attribute with internal name
+         * @format binary
+         * @example false
+         */
+        file?: File;
+        /**
+         * The mapping options in JSON format. Here is an example of the JSON structure:
+         *   ```json
+         * {
+         *   "link_entities": true, // Determines whether to link related entities during the import process
+         *   "unlink_entities": false, // Determines whether to unlink related entities during the import process
+         *   "update_existing_records": true, // Determines whether to update based on company ID or treat every row as create
+         *   "unset_empty_attributes": false // Determines whether to unset a specific attribute during update if the values input is blank
+         * }
+         *  ```
+         */
+        mapping?: object;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          /**
+           * The ID of the import process
+           * @example 50
+           */
+          processId?: number;
+        },
+        {
+          /** @example "Bad request : With reason" */
+          message?: string;
+        }
+      >({
+        path: `/crm/deals/import`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.FormData,
+        format: "json",
         ...params,
       }),
 
@@ -12664,6 +12402,71 @@ export class Brevo<SecurityDataType extends unknown> extends HttpClient<Security
         path: `/ecommerce/activate`,
         method: "POST",
         secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Ecommerce
+     * @name SetConfigDisplayCurrency
+     * @summary Set the ISO 4217 compliant display currency code for your Brevo account
+     * @request POST:/ecommerce/config/displayCurrency
+     * @secure
+     */
+    setConfigDisplayCurrency: (
+      data: {
+        /**
+         * ISO 4217 compliant display currency code
+         * @example "EUR"
+         */
+        code: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          /**
+           * ISO 4217 compliant display currency code
+           * @example "EUR"
+           */
+          code: string;
+        },
+        ErrorModel
+      >({
+        path: `/ecommerce/config/displayCurrency`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Ecommerce
+     * @name ConfigDisplayCurrencyList
+     * @summary Get the ISO 4217 compliant display currency code for your Brevo account
+     * @request GET:/ecommerce/config/displayCurrency
+     * @secure
+     */
+    configDisplayCurrencyList: (params: RequestParams = {}) =>
+      this.request<
+        {
+          /**
+           * ISO 4217 compliant display currency code
+           * @example "EUR"
+           */
+          code: string;
+        },
+        ErrorModel
+      >({
+        path: `/ecommerce/config/displayCurrency`,
+        method: "GET",
+        secure: true,
+        format: "json",
         ...params,
       }),
 
