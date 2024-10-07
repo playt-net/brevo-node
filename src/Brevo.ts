@@ -1034,9 +1034,18 @@ export interface AddContactToListByIDs {
   ids?: number[];
 }
 
+export interface AddContactToListByExtIDs {
+  /**
+   * EXT_ID attributes to add to a list. You can pass a **maximum of 150 EXT_ID attributes** for addition in one request. **_If you need to add the emails in bulk, please prefer /contacts/import api._**
+   * @maxItems 150
+   * @minItems 1
+   */
+  extIds?: string[];
+}
+
 export interface RemoveContactFromListByEmails {
   /**
-   * **Required if 'all' is false and 'ids' is empty.** Emails to remove from a list. You can pass a **maximum of 150 emails** for removal in one request.
+   * **Required if 'all' is false and 'ids', 'extIds' are empty.** Emails to remove from a list. You can pass a **maximum of 150 emails** for removal in one request.
    * @maxItems 150
    * @minItems 1
    */
@@ -1045,7 +1054,7 @@ export interface RemoveContactFromListByEmails {
 
 export interface RemoveContactFromListByIDs {
   /**
-   * **Required if 'all' is false and 'emails' is empty.** IDs to remove from a list. You can pass a **maximum of 150 IDs** for removal in one request.
+   * **Required if 'all' is false and 'emails', 'extIds' are empty.** IDs to remove from a list. You can pass a **maximum of 150 IDs** for removal in one request.
    * @maxItems 150
    * @minItems 1
    */
@@ -1054,10 +1063,19 @@ export interface RemoveContactFromListByIDs {
 
 export interface RemoveContactFromListByAll {
   /**
-   * **Required if 'emails' and 'ids' are empty.** Remove all existing contacts from a list. A process will be created in this scenario. You can fetch the process details to know about the progress
+   * **Required if 'emails', 'extIds' and 'ids' are empty.** Remove all existing contacts from a list. A process will be created in this scenario. You can fetch the process details to know about the progress
    * @example true
    */
   all?: boolean;
+}
+
+export interface RemoveContactFromListByExtIDs {
+  /**
+   * **Required if 'all' is false, 'ids' and 'emails' are empty.** EXT_ID attributes to remove from a list. You can pass a **maximum of 150 EXT_ID attributes** for removal in one request.
+   * @maxItems 150
+   * @minItems 1
+   */
+  extIds?: string[];
 }
 
 export interface GetSmsCampaignOverview {
@@ -6074,6 +6092,16 @@ export interface Order {
      * @example "loyalty_id_1"
      */
     loyalty_subscription_id?: string;
+    /**
+     * Phone number of the contact associated with the order
+     * @example "01559 032133"
+     */
+    phone_id?: string;
+    /**
+     * Email of the contact associated with the order
+     * @example "example@brevo.com"
+     */
+    email_id?: string;
   };
   products: {
     /**
@@ -6097,11 +6125,6 @@ export interface Order {
      */
     price: number;
   }[];
-  /**
-   * Email of the contact, Mandatory if "phone" field is not passed in "billing" parameter.
-   * @example "example@brevo.com"
-   */
-  email?: string;
   /** Billing details of an order. */
   billing?: {
     /**
@@ -6125,7 +6148,7 @@ export interface Order {
      */
     country?: string;
     /**
-     * Phone number to contact for further details about the order, Mandatory if "email" field is not passed.
+     * Billing phone number.
      * @example "01559 032133"
      */
     phone?: string;
@@ -8334,7 +8357,7 @@ export class Brevo<SecurityDataType extends unknown> extends HttpClient<Security
       }),
 
     /**
-     * @description There are 2 ways to get a contact <br><br> Option 1- https://api.brevo.com/v3/contacts/{identifier} <br><br> Option 2- https://api.brevo.com/v3/contacts/{identifier}?identifierType={} <br> <br> Option 1 only works if identifierType is email_id (for EMAIL), phone_id (for SMS) or contact_id (for ID of the contact),where you can directly pass the value of EMAIL, SMS and ID of the contact.   <br><br> Option 2 works for all identifierType, use email_id for EMAIL attribute, phone_id for SMS attribute, contact_id for ID of the contact, ext_id for EXT_ID attribute <br><br>Along with the contact details, this endpoint will show the statistics of contact for the recent 90 days by default. To fetch the earlier statistics, please use Get contact campaign stats ``https://developers.brevo.com/reference/contacts-7#getcontactstats`` endpoint with the appropriate date ranges.
+     * @description There are 2 ways to get a contact <br><br> Option 1- https://api.brevo.com/v3/contacts/{identifier} <br><br> Option 2- https://api.brevo.com/v3/contacts/{identifier}?identifierType={} <br> <br> Option 1 only works if identifierType is email_id (for EMAIL), phone_id (for SMS) or contact_id (for ID of the contact),where you can directly pass the value of EMAIL, SMS and ID of the contact.   <br><br> Option 2 works for all identifierType, use email_id for EMAIL attribute, phone_id for SMS attribute, contact_id for ID of the contact, ext_id for EXT_ID attribute, whatsapp_id for WHATSAPP attribute, landline_number_id for LANDLINE_NUMBER attribute <br><br>Along with the contact details, this endpoint will show the statistics of contact for the recent 90 days by default. To fetch the earlier statistics, please use Get contact campaign stats ``https://developers.brevo.com/reference/contacts-7#getcontactstats`` endpoint with the appropriate date ranges.
      *
      * @tags Contacts
      * @name GetContactInfo
@@ -8345,8 +8368,8 @@ export class Brevo<SecurityDataType extends unknown> extends HttpClient<Security
     getContactInfo: (
       identifier: string | number,
       query?: {
-        /** email_id for Email, phone_id for SMS attribute, contact_id for ID of the contact, ext_id for EXT_ID attribute */
-        identifierType?: "email_id" | "phone_id" | "contact_id" | "ext_id";
+        /** email_id for Email, phone_id for SMS attribute, contact_id for ID of the contact, ext_id for EXT_ID attribute, whatsapp_id for WHATSAPP attribute, landline_number_id for LANDLINE_NUMBER attribute */
+        identifierType?: "email_id" | "phone_id" | "contact_id" | "ext_id" | "whatsapp_id" | "landline_number_id";
         /** **Mandatory if endDate is used.** Starting date (YYYY-MM-DD) of the statistic events specific to campaigns. Must be lower than equal to endDate */
         startDate?: string;
         /** **Mandatory if startDate is used.** Ending date (YYYY-MM-DD) of the statistic events specific to campaigns. Must be greater than equal to startDate. */
@@ -8959,7 +8982,7 @@ export class Brevo<SecurityDataType extends unknown> extends HttpClient<Security
      */
     addContactToList: (
       listId: number,
-      data: AddContactToListByEmails | AddContactToListByIDs,
+      data: AddContactToListByEmails | AddContactToListByIDs | AddContactToListByExtIDs,
       params: RequestParams = {},
     ) =>
       this.request<PostContactInfo, ErrorModel>({
@@ -8983,7 +9006,11 @@ export class Brevo<SecurityDataType extends unknown> extends HttpClient<Security
      */
     removeContactFromList: (
       listId: number,
-      data: RemoveContactFromListByEmails | RemoveContactFromListByIDs | RemoveContactFromListByAll,
+      data:
+        | RemoveContactFromListByEmails
+        | RemoveContactFromListByIDs
+        | RemoveContactFromListByAll
+        | RemoveContactFromListByExtIDs,
       params: RequestParams = {},
     ) =>
       this.request<PostContactInfo, ErrorModel>({
