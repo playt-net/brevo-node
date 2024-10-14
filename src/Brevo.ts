@@ -1473,6 +1473,677 @@ export interface UpdateWhatsAppCampaign {
   };
 }
 
+export interface LoyaltyProgramPage {
+  /** Loyalty Program list */
+  items?: LoyaltyProgram[];
+}
+
+export interface CreateLoyaltyProgramPayload {
+  /** Loyalty Program name */
+  name: string;
+  /** Loyalty Program description */
+  description?: string;
+  /** Loyalty Program meta data */
+  meta?: object;
+  /** Document Id */
+  documentId?: string;
+}
+
+export interface LoyaltyProgram {
+  /**
+   * Loyalty Program ID
+   * @format uuid
+   */
+  id?: string;
+  /** Loyalty Program name */
+  name?: string;
+  /** Loyalty Program description */
+  description?: string;
+  /** Loyalty Program meta data */
+  meta?: object;
+  /**
+   * Loyalty Program creation date
+   * @format date-time
+   */
+  createdAt?: string;
+  /**
+   * Loyalty Program last modification date
+   * @format date-time
+   */
+  updatedAt?: string;
+  /** Loyalty Program state */
+  state?: "inactive" | "active";
+}
+
+export interface CreateSubscriptionPayload {
+  /** Contact ID */
+  contactId: number;
+  /** Loyalty Subscription ID */
+  loyaltySubscriptionId?: string;
+}
+
+export interface CreateSubscriptionResponse {
+  /** Organization ID */
+  organizationId?: number;
+  /**
+   * Loyalty Program ID
+   * @format uuid
+   */
+  loyaltyProgramId?: string;
+  /** Version ID */
+  versionId?: number;
+  /** Contact ID */
+  contactId?: number;
+  /** Loyalty Subscription ID */
+  loyaltySubscriptionId?: string;
+  /**
+   * Subscription creation date
+   * @format date-time
+   */
+  createdAt?: string;
+  /**
+   * Subscription last modification date
+   * @format date-time
+   */
+  updatedAt?: string;
+}
+
+export interface UpdateLoyaltyProgramPayload {
+  /** Loyalty Program name */
+  name: string;
+  /** Loyalty Program description */
+  description?: string;
+  /** Loyalty Program meta data */
+  meta?: object;
+  /**
+   * Document Id
+   * @format uuid
+   */
+  documentId?: string;
+}
+
+export type ValidationErrors = LoyaltyProgramValidationError[];
+
+export interface LoyaltyProgramValidationError {
+  /** Path of data that failed validation */
+  path?: string;
+  /** Rule that failed validation */
+  rule?: string;
+  /** Validation error message */
+  error?: string;
+}
+
+export interface PatchLoyaltyProgramPayload {
+  /** Loyalty Program name */
+  name?: string;
+  /** Loyalty Program description */
+  description?: string;
+  /** Loyalty Program meta data */
+  meta?: object;
+}
+
+export interface CreateSubscriptionMemberPayload {
+  /** One of contact id or loyalty subscription id is required */
+  contactId?: number;
+  /** Client Reference */
+  loyaltySubscriptionId?: string;
+  /** Member Contact Ids */
+  memberContactIds: number[];
+}
+
+export interface CreateSubscriptionMemberResponse {
+  /** Organization Id */
+  organizationId?: number;
+  /** Owner Contact Id */
+  ownerContactId?: number;
+  /** Member Contact Ids */
+  memberContactIds?: number[];
+  /**
+   * Subscription creation date
+   * @format date-time
+   */
+  createdAt?: string;
+  /**
+   * Subscription last modification date
+   * @format date-time
+   */
+  updatedAt?: string;
+}
+
+export interface DeleteSubscriptionMemberPayload {
+  /**
+   * Contact Id
+   * @default 1
+   */
+  contactId: number;
+  /** Member Contact Ids */
+  memberContactIds: number[];
+}
+
+export interface GetSubscriptionMemberResponse {
+  /** Organization Id */
+  organizationId?: number;
+  /**
+   * Loyalty Program Id
+   * @format uuid
+   */
+  loyaltyProgramId?: string;
+  /** Version Id */
+  versionId?: number;
+  memberContactId?: {
+    memberContactId?: string[];
+    /** @format date-time */
+    createdAt?: string;
+    /** @format date-time */
+    updatedAt?: string;
+  }[];
+  /** Client Reference */
+  loyaltySubscriptionId?: string;
+  /**
+   * Subscription creation date
+   * @format date-time
+   */
+  createdAt?: string;
+  /**
+   * Subscription last modification date
+   * @format date-time
+   */
+  updatedAt?: string;
+}
+
+export interface GetVersionInfoResponse {
+  /** Active Version Information */
+  active?: VersionInfo[];
+  /** Draft Version Information */
+  draft?: VersionInfo[];
+  /** Inactive Version Information */
+  inactive?: VersionInfo[];
+}
+
+export interface VersionInfo {
+  /** Version Name */
+  name?: string;
+  /**
+   * Loyalty Program Id
+   * @format uuid
+   */
+  loyaltyProgramId?: string;
+  /** Loyalty Version Id */
+  loyaltyVersionId?: number;
+  /** Parent Version Id */
+  parentVersionId?: number;
+  /** Version State */
+  state?: string;
+  /**
+   * Version Publish date
+   * @format date-time
+   */
+  publishedAt?: string;
+  /**
+   * Version creation date
+   * @format date-time
+   */
+  createdAt?: string;
+  /**
+   * Version last modification date
+   * @format date-time
+   */
+  updatedAt?: string;
+}
+
+export interface BadRequestPayload {
+  /** Readable message associated to the failure */
+  error?: string;
+}
+
+export interface GetSubscriptionInfoResponse {
+  /** Balance Information */
+  balance?: {
+    /**
+     * Loyalty Program Id
+     * @format uuid
+     */
+    loyaltyProgramId?: string;
+    /** one of contact id or loyalty subscription id is required */
+    contactId?: number;
+    /** Balances */
+    balances?: {
+      /**
+       * Balance Definition Id
+       * @format uuid
+       */
+      balanceDefinitionId?: string;
+      /** Value */
+      value?: number;
+    }[];
+  };
+  /** Tier Information */
+  tier?: {
+    /**
+     * Tier Id
+     * @format uuid
+     */
+    tierId?: string;
+    /**
+     * Loyalty Program Id
+     * @format uuid
+     */
+    loyaltyProgramId?: string;
+    /** Contact Id */
+    contactId?: number;
+    /**
+     * Group Id
+     * @format uuid
+     */
+    groupId?: string;
+    /**
+     * Tier creation date
+     * @format date-time
+     */
+    createdAt?: string;
+    /**
+     * Tier last modification date
+     * @format date-time
+     */
+    updatedAt?: string;
+  }[];
+  /** Subscription Member Information */
+  members?: {
+    /** Member Contact Id */
+    memberContactId?: number;
+    /**
+     * Member creation date
+     * @format date-time
+     */
+    createdAt?: string;
+    /**
+     * Member last modification date
+     * @format date-time
+     */
+    updatedAt?: string;
+  }[];
+  /** Reward Information */
+  reward?: {
+    /**
+     * Reward Id
+     * @format uuid
+     */
+    id?: string;
+    /**
+     * Reward Id
+     * @format uuid
+     */
+    rewardId?: string;
+    /**
+     * Loyalty Program Id
+     * @format uuid
+     */
+    loyaltyProgramId?: string;
+    /** Contact Id */
+    contactId?: number;
+    /** Reward Code */
+    code?: string;
+    /**
+     * Reward expiration date
+     * @format date-time
+     */
+    expirationDate?: string;
+  }[];
+}
+
+export interface ContactIdInvalidResponse {
+  /** Readable message associated to the failure */
+  error?: string;
+}
+
+export interface RewardAttributionResponse {
+  /**
+   * Attributed reward Id
+   * @format uuid
+   */
+  id?: string;
+  /**
+   * Reward id which ias attributed
+   * @format uuid
+   */
+  rewardId?: string;
+  /**
+   * Loyalty program id
+   * @format uuid
+   */
+  loyaltyProgramId?: string;
+  /** Contact to which reward is attributed */
+  contactId?: number;
+  /** code associated to the attributed reward */
+  code?: string;
+  /** @format date-time */
+  expirationDate?: string;
+  /** @format date-time */
+  consumedAt?: string;
+  /** @format date-time */
+  createdAt?: string;
+  /** @format date-time */
+  updatedAt?: string;
+}
+
+export interface SubscriptionNotFoundErrorResponse {
+  /** @default "subscription not found" */
+  error?: string;
+}
+
+export interface AttributeRewardPayload {
+  /**
+   * Reward id
+   * @format uuid
+   */
+  rewardId: string;
+  /** Contact to attribute the reward */
+  contactId?: number;
+  /** One of contactId or loyaltySubscriptionId is required */
+  loyaltySubscriptionId?: string;
+}
+
+export interface AttributedRewardFailedConditionErrorResponse {
+  /** @example ["reward attribution not valid","reward disabled","invalid reward attribution period","invalid reward attribution case","day limit exceeded","week limit exceeded","month limit exceeded","year limit exceeded","attribute limit per customer exceeded","total attribution count exceeded"] */
+  error?: string;
+}
+
+export interface ValidateRewardPayload {
+  /** Contact to attribute the reward */
+  contactId?: number;
+  /** One of contactId or loyaltySubscriptionId is required */
+  loyaltySubscriptionId?: string;
+  /** Code to validate */
+  code?: string;
+  /**
+   * One of code or attributed reward id is required
+   * @format uuid
+   */
+  attributedRewardId?: string;
+}
+
+export interface ValidatedRewardResponse {
+  /** Validated reward respone */
+  authorize?: boolean;
+}
+
+export interface RedeemRewardPayload {
+  /** Code to validate */
+  code?: string;
+  /**
+   * One of code or attributed reward id is required
+   * @format uuid
+   */
+  attributedRewardId?: string;
+  /**
+   * Point of sale reward id
+   * @format uuid
+   */
+  posId?: string;
+  /** Contact to attribute the reward */
+  contactId?: number;
+  /** One of contactId or loyaltySubscriptionId is required */
+  loyaltySubscriptionId?: string;
+}
+
+export interface RewardRedeemResponse {
+  /**
+   * Attributed reward Id
+   * @format uuid
+   */
+  id: string;
+  /**
+   * Reward id which ias attributed
+   * @format uuid
+   */
+  rewardId: string;
+  /**
+   * Loyalty program id
+   * @format uuid
+   */
+  loyaltyProgramId: string;
+  /** Contact to which reward is attributed */
+  contactId: number;
+  /** code associated to the attributed reward */
+  code?: string;
+  /** @format date-time */
+  consumedAt: string;
+  /** @format date-time */
+  expirationDate?: string;
+  /** @format date-time */
+  createdAt: string;
+  /** @format date-time */
+  updatedAt: string;
+}
+
+export interface RedeemedRewardFailedConditionErrorResponse {
+  /** @example ["code is invalid","code is already consumed","code is expired","code is deleted","reward limit for redeem reached","reward total redeem limit reached","reward per consumer redeem limit reached","redeem reward rejected"] */
+  error?: string;
+}
+
+export interface OffersListResponse {
+  /**
+   * Total count of offers
+   * @example 1
+   */
+  totalCount?: number;
+  /** List of offers */
+  items?: Offer[];
+}
+
+export interface OfferList {
+  /** List of offers */
+  items?: Offer[];
+}
+
+export interface Offer {
+  /**
+   * Offer id
+   * @format uuid
+   */
+  id?: string;
+  /**
+   * Loyalty program id
+   * @format uuid
+   */
+  loyaltyProgramId?: string;
+  /** Offer name */
+  name?: string;
+  /** Offer state */
+  state?: "active" | "pending" | "disabled" | "expired";
+  /** Offer image url */
+  publicImageUrl?: string;
+  /**
+   * Offer creation date
+   * @format date-time
+   */
+  createdAt?: string;
+  /**
+   * Offer update date
+   * @format date-time
+   */
+  updatedAt?: string;
+}
+
+export interface BalanceDefinitionPage {
+  /** Balance definition list */
+  items?: BalanceDefinition[];
+}
+
+export interface BalanceDefinition {
+  /**
+   * Balance definition Id
+   * @format uuid
+   */
+  id?: string;
+  /** Balance definition name */
+  name?: string;
+  /** Balance definition description */
+  description?: string;
+  /** Balance definition image reference */
+  imageRef?: string;
+  /** Balance definition meta data */
+  meta?: object;
+  /** Balance definition unit */
+  unit?: string;
+  /** Balance definition minimum authorized amount */
+  minAmount?: number;
+  /** Balance definition maximum authorized amount */
+  maxAmount?: number;
+  /** Balance definition maximum credit amount limit */
+  maximumCreditAmountLimit?: number;
+  /** Balance definition maximum debit amount limit */
+  maximumDebitAmountLimit?: number;
+  /** Balance definition balance option amount overtaking strategy */
+  balanceOptionAmountOvertakingStrategy?: "strict" | "partial";
+  /** Balance definition balance option credit rounding */
+  balanceOptionCreditRounding?: "natural" | "upper" | "lower";
+  /** Balance definition balance option debit rounding */
+  balanceOptionDebitRounding?: "natural" | "upper" | "lower";
+  /** Balance definition balance availability duration value */
+  balanceAvailabilityDurationValue?: number;
+  /** Balance definition balance availability duration unit */
+  balanceAvailabilityDurationUnit?: "day" | "week" | "month" | "year";
+  /** Balance definition balance availability duration modifier */
+  balanceAvailabilityDurationModifier?: "start_of_period" | "end_of_period" | "no_modification";
+  /**
+   * Balance definition balance expiration date
+   * @format date-time
+   */
+  balanceExpirationDate?: string;
+  /**
+   * Balance definition creation date
+   * @format date-time
+   */
+  createdAt?: string;
+  /**
+   * Balance definition last modification date
+   * @format date-time
+   */
+  updatedAt?: string;
+}
+
+export interface CreateBalanceDefinitionPayload {
+  /** Balance definition name */
+  name: string;
+  /** Balance definition description */
+  description?: string;
+  /**
+   * Balance definition meta data
+   * @example {"OrderedMap":{"key":"value"}}
+   */
+  meta?: object;
+  /** Balance definition unit */
+  unit: string;
+  /** Balance definition minimum authorized amount */
+  min_amount?: number;
+  /** Balance definition maximum authorized amount */
+  max_amount?: number;
+  /** Balance definition maximum credit amount limit */
+  max_credit_amount_limit?: number;
+  /** Balance definition maximum debit amount limit */
+  max_debit_amount_limit?: number;
+  /**
+   * Balance definition balance option amount overtaking strategy
+   * @default "strict"
+   */
+  balance_option_amount_overtaking_strategy?: "strict" | "partial";
+  /** Balance definition balance option credit rounding */
+  balance_option_credit_rounding?: "natural" | "upper" | "lower";
+  /** Balance definition balance option debit rounding */
+  balance_option_debit_rounding?: "natural" | "upper" | "lower";
+  /** Balance definition balance availability duration value */
+  balance_availability_duration_value?: number;
+  /** Balance definition balance availability duration unit */
+  balance_availability_duration_unit?: "day" | "week" | "month" | "year";
+  /** Balance definition balance availability duration modifier */
+  balance_availability_duration_modifier?: "start_of_period" | "end_of_period" | "no_modification";
+  /**
+   * Balance definition balance expiration date
+   * @example "02/01"
+   */
+  balance_expiration_date?: string;
+  /** Balance definition image reference */
+  image_ref?: string;
+}
+
+export interface UpdateBalanceDefinitionPayload {
+  /** Balance definition name */
+  name: string;
+  /** Balance definition description */
+  description?: string;
+  /**
+   * Balance definition meta data
+   * @example {"OrderedMap":{"key":"value"}}
+   */
+  meta?: object;
+  /** Balance definition unit */
+  unit: string;
+  /** Balance definition minimum authorized amount */
+  min_amount?: number;
+  /** Balance definition maximum authorized amount */
+  max_amount?: number;
+  /** Balance definition maximum credit amount limit */
+  max_credit_amount_limit?: number;
+  /** Balance definition maximum debit amount limit */
+  max_debit_amount_limit?: number;
+  /**
+   * Balance definition balance option amount overtaking strategy
+   * @default "strict"
+   */
+  balance_option_amount_overtaking_strategy?: "strict" | "partial";
+  /** Balance definition balance option credit rounding */
+  balance_option_credit_rounding?: "natural" | "upper" | "lower";
+  /** Balance definition balance option debit rounding */
+  balance_option_debit_rounding?: "natural" | "upper" | "lower";
+  /** Balance definition balance availability duration value */
+  balance_availability_duration_value?: number;
+  /** Balance definition balance availability duration unit */
+  balance_availability_duration_unit?: "day" | "week" | "month" | "year";
+  /** Balance definition balance availability duration modifier */
+  balance_availability_duration_modifier?: "start_of_period" | "end_of_period" | "no_modification";
+  /**
+   * Balance definition balance expiration date
+   * @example "02/01"
+   */
+  balance_expiration_date?: string;
+  /** Balance definition image reference */
+  image_ref?: string;
+}
+
+/** Balance definition limit */
+export interface BalanceLimit {
+  /** Balance definition transaction type */
+  transaction_type?: "debit" | "credit";
+  /** Balance definition duration value */
+  duration_value?: number;
+  /** Balance definition duration unit */
+  duration_unit?: "day" | "week" | "month" | "year";
+  /** Balance definition value */
+  value?: number;
+  /** Balance definition constraint type */
+  constraint_type?: "amount" | "transaction";
+}
+
+/** Balance definition limit payload */
+export interface BalanceLimitPayload {
+  /**
+   * Balance limit id
+   * @format uuid
+   */
+  id?: string;
+  /** Balance definition transaction type */
+  transaction_type?: "debit" | "credit";
+  /** Balance definition duration value */
+  duration_value?: number;
+  /** Balance definition duration unit */
+  duration_unit?: "day" | "week" | "month" | "year";
+  /** Balance definition value */
+  value?: number;
+  /** Balance definition constraint type */
+  constraint_type?: "amount" | "transaction";
+}
+
 export interface CreateModel {
   /**
    * ID of the object created
@@ -9667,6 +10338,425 @@ export class Brevo<SecurityDataType extends unknown> extends HttpClient<Security
       this.request<GetWhatsAppConfig, ErrorModel>({
         path: `/whatsappCampaigns/config`,
         method: "GET",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+  };
+  loyalty = {
+    /**
+     * @description Returns list of loyalty programs
+     *
+     * @tags Program
+     * @name GetLpList
+     * @summary Get loyalty program list
+     * @request GET:/loyalty/config/programs
+     * @secure
+     */
+    getLpList: (
+      query?: {
+        /**
+         * Number of documents per page
+         * @format int64
+         * @default 200
+         */
+        limit?: number;
+        /**
+         * Index of the first document in the page
+         * @format int64
+         * @default 0
+         */
+        offset?: number;
+        /**
+         * Sort documents by field
+         * @default "updatedAt"
+         */
+        sortField?: "name" | "createdAt" | "updatedAt";
+        /**
+         * Sort the documents in the ascending or descending order
+         * @default "desc"
+         */
+        sort?: "asc" | "desc";
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<LoyaltyProgramPage, BadRequestPayload>({
+        path: `/loyalty/config/programs`,
+        method: "GET",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Creates loyalty program
+     *
+     * @tags Program
+     * @name CreateNewLp
+     * @summary Create loyalty program
+     * @request POST:/loyalty/config/programs
+     * @secure
+     */
+    createNewLp: (data: CreateLoyaltyProgramPayload, params: RequestParams = {}) =>
+      this.request<LoyaltyProgram, BadRequestPayload>({
+        path: `/loyalty/config/programs`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Returns loyalty program
+     *
+     * @tags Program
+     * @name GetLoyaltyProgramInfo
+     * @summary Get loyalty program Info
+     * @request GET:/loyalty/config/programs/{loyaltyProgramId}
+     * @secure
+     */
+    getLoyaltyProgramInfo: (loyaltyProgramId: string, params: RequestParams = {}) =>
+      this.request<LoyaltyProgram, BadRequestPayload | void>({
+        path: `/loyalty/config/programs/${loyaltyProgramId}`,
+        method: "GET",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Updates loyalty program
+     *
+     * @tags Program
+     * @name UpdateLoyaltyProgram
+     * @summary Update loyalty program
+     * @request PUT:/loyalty/config/programs/{loyaltyProgramId}
+     * @secure
+     */
+    updateLoyaltyProgram: (loyaltyProgramId: string, data: UpdateLoyaltyProgramPayload, params: RequestParams = {}) =>
+      this.request<LoyaltyProgram, BadRequestPayload>({
+        path: `/loyalty/config/programs/${loyaltyProgramId}`,
+        method: "PUT",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Partially updates loyalty program
+     *
+     * @tags Program
+     * @name PartiallyUpdateLoyaltyProgram
+     * @summary Partially update loyalty program
+     * @request PATCH:/loyalty/config/programs/{loyaltyProgramId}
+     * @secure
+     */
+    partiallyUpdateLoyaltyProgram: (
+      loyaltyProgramId: string,
+      data: PatchLoyaltyProgramPayload,
+      params: RequestParams = {},
+    ) =>
+      this.request<LoyaltyProgram, BadRequestPayload>({
+        path: `/loyalty/config/programs/${loyaltyProgramId}`,
+        method: "PATCH",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Deletes Loyalty Program
+     *
+     * @tags Program
+     * @name DeleteLoyaltyProgram
+     * @summary Delete Loyalty Program
+     * @request DELETE:/loyalty/config/programs/{loyaltyProgramId}
+     * @secure
+     */
+    deleteLoyaltyProgram: (loyaltyProgramId: string, params: RequestParams = {}) =>
+      this.request<void, BadRequestPayload>({
+        path: `/loyalty/config/programs/${loyaltyProgramId}`,
+        method: "DELETE",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description Publishes loyalty program
+     *
+     * @tags Program
+     * @name PublishLoyaltyProgram
+     * @summary Publish loyalty program
+     * @request POST:/loyalty/config/programs/{loyaltyProgramId}/publish
+     * @secure
+     */
+    publishLoyaltyProgram: (loyaltyProgramId: string, params: RequestParams = {}) =>
+      this.request<void, BadRequestPayload>({
+        path: `/loyalty/config/programs/${loyaltyProgramId}/publish`,
+        method: "POST",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description Subscribes to a loyalty program
+     *
+     * @tags Program
+     * @name SubscribeToLoyaltyProgram
+     * @summary Create subscription
+     * @request POST:/loyalty/config/programs/{loyaltyProgramId}/subscriptions
+     * @secure
+     */
+    subscribeToLoyaltyProgram: (
+      loyaltyProgramId: string,
+      data: CreateSubscriptionPayload,
+      params: RequestParams = {},
+    ) =>
+      this.request<CreateSubscriptionResponse, BadRequestPayload | ContactIdInvalidResponse>({
+        path: `/loyalty/config/programs/${loyaltyProgramId}/subscriptions`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Add member to a subscription
+     *
+     * @tags Program
+     * @name SubscribeMemberToASubscription
+     * @summary Create subscription member
+     * @request POST:/loyalty/config/programs/{loyaltyProgramId}/subscriptions-members
+     * @secure
+     */
+    subscribeMemberToASubscription: (
+      loyaltyProgramId: string,
+      data: CreateSubscriptionMemberPayload,
+      params: RequestParams = {},
+    ) =>
+      this.request<CreateSubscriptionMemberResponse, ContactIdInvalidResponse | BadRequestPayload>({
+        path: `/loyalty/config/programs/${loyaltyProgramId}/subscriptions-members`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Deletes member from a subscription
+     *
+     * @tags Program
+     * @name DeleteContactMembers
+     * @summary Delete subscription member
+     * @request DELETE:/loyalty/config/programs/{loyaltyProgramId}/subscriptions-members
+     * @secure
+     */
+    deleteContactMembers: (
+      loyaltyProgramId: string,
+      query: {
+        /** Contact Id */
+        contactId: number;
+        /** Member Contact Ids, comma-seperated */
+        memberContactIds: number;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<void, ContactIdInvalidResponse | BadRequestPayload>({
+        path: `/loyalty/config/programs/${loyaltyProgramId}/subscriptions-members`,
+        method: "DELETE",
+        query: query,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description Deletes subscription
+     *
+     * @tags Program
+     * @name DeleteSubscriptionMember
+     * @summary Delete subscription
+     * @request DELETE:/loyalty/config/programs/{loyaltyProgramId}/contact/{contactId}
+     * @secure
+     */
+    deleteSubscriptionMember: (loyaltyProgramId: string, contactId: string, params: RequestParams = {}) =>
+      this.request<void, ContactIdInvalidResponse | BadRequestPayload>({
+        path: `/loyalty/config/programs/${loyaltyProgramId}/contact/${contactId}`,
+        method: "DELETE",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description Get subscription info
+     *
+     * @tags Program
+     * @name GetSubscriptionMember
+     * @summary Get subscription info
+     * @request GET:/loyalty/config/programs/{loyaltyProgramId}/contact/{contactId}
+     * @secure
+     */
+    getSubscriptionMember: (loyaltyProgramId: string, contactId: string, params: RequestParams = {}) =>
+      this.request<GetSubscriptionMemberResponse, ContactIdInvalidResponse | BadRequestPayload>({
+        path: `/loyalty/config/programs/${loyaltyProgramId}/contact/${contactId}`,
+        method: "GET",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Get Information of balances, tiers, rewards and subscription members for a subscription
+     *
+     * @tags Program
+     * @name GetParameterSubscriptionInfo
+     * @summary Get Subscription Data
+     * @request GET:/loyalty/config/programs/{loyaltyProgramId}/account-info
+     * @secure
+     */
+    getParameterSubscriptionInfo: (
+      loyaltyProgramId: string,
+      query: {
+        /** One of contact id or loyalty subscription id is required */
+        contactId: number;
+        /** Loyalty Subscription Id */
+        loyaltySubscriptionId?: string;
+        /** Add query params (balance, tier, reward, or member) */
+        params?: ("balance" | "tier" | "reward" | "member")[];
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<GetSubscriptionInfoResponse, ContactIdInvalidResponse | BadRequestPayload>({
+        path: `/loyalty/config/programs/${loyaltyProgramId}/account-info`,
+        method: "GET",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Attributes reward to a new contact
+     *
+     * @tags Rewards
+     * @name AttributeReward
+     * @summary Attribute reward to a contact
+     * @request POST:/loyalty/offer/programs/{loyaltyProgramId}/rewards/attribute
+     * @secure
+     */
+    attributeReward: (loyaltyProgramId: string, data: AttributeRewardPayload, params: RequestParams = {}) =>
+      this.request<
+        RewardAttributionResponse,
+        BadRequestPayload | AttributedRewardFailedConditionErrorResponse | ContactIdInvalidResponse
+      >({
+        path: `/loyalty/offer/programs/${loyaltyProgramId}/rewards/attribute`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Validates a reward for a contact and return the response
+     *
+     * @tags Rewards
+     * @name ValidateReward
+     * @summary Validates a voucher
+     * @request POST:/loyalty/offer/programs/{loyaltyProgramId}/rewards/validate
+     * @secure
+     */
+    validateReward: (loyaltyProgramId: string, data: ValidateRewardPayload, params: RequestParams = {}) =>
+      this.request<
+        ValidatedRewardResponse,
+        BadRequestPayload | SubscriptionNotFoundErrorResponse | ContactIdInvalidResponse
+      >({
+        path: `/loyalty/offer/programs/${loyaltyProgramId}/rewards/validate`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Redeems/Burn a reward for a contact
+     *
+     * @tags Rewards
+     * @name RedeemReward
+     * @summary Redeem reward
+     * @request POST:/loyalty/offer/programs/{loyaltyProgramId}/rewards/redeem
+     * @secure
+     */
+    redeemReward: (loyaltyProgramId: string, data: RedeemRewardPayload, params: RequestParams = {}) =>
+      this.request<
+        RewardRedeemResponse,
+        | BadRequestPayload
+        | SubscriptionNotFoundErrorResponse
+        | RedeemedRewardFailedConditionErrorResponse
+        | ContactIdInvalidResponse
+      >({
+        path: `/loyalty/offer/programs/${loyaltyProgramId}/rewards/redeem`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Returns a list of rewards for a given loyalty program
+     *
+     * @tags Rewards
+     * @name GetOffersList
+     * @summary Get Reward list
+     * @request GET:/loyalty/offer/programs/{loyaltyProgramId}/offers
+     * @secure
+     */
+    getOffersList: (
+      loyaltyProgramId: string,
+      query?: {
+        /**
+         * Number of documents per page
+         * @default 100
+         */
+        limit?: number;
+        /**
+         * Index of the first document in the page
+         * @format int64
+         * @default 0
+         */
+        offset?: number;
+        /**
+         * State of the reward
+         * @default "all"
+         */
+        rewardState?: "all" | "active" | "pending" | "disabled" | "expired";
+        /**
+         * Select 'active' to retrieve list of all rewards which are live for clients. Select draft to retrieve list of all non deleted rewards.
+         * @default "draft"
+         */
+        rewardVersion?: "active" | "draft";
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<OffersListResponse, BadRequestPayload | ContactIdInvalidResponse>({
+        path: `/loyalty/offer/programs/${loyaltyProgramId}/offers`,
+        method: "GET",
+        query: query,
         secure: true,
         format: "json",
         ...params,
