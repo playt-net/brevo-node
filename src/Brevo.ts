@@ -9276,7 +9276,7 @@ export class Brevo<SecurityDataType extends unknown> extends HttpClient<Security
      * @secure
      */
     getFolders: (
-      query: {
+      query?: {
         /**
          * Number of documents per page
          * @format int64
@@ -9284,13 +9284,13 @@ export class Brevo<SecurityDataType extends unknown> extends HttpClient<Security
          * @max 50
          * @default 10
          */
-        limit: number;
+        limit?: number;
         /**
          * Index of the first document of the page
          * @format int64
          * @default 0
          */
-        offset: number;
+        offset?: number;
         /**
          * Sort the results in the ascending/descending order of record creation. Default order is **descending** if `sort` is not passed
          * @default "desc"
