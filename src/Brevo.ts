@@ -8692,7 +8692,7 @@ export class Brevo<SecurityDataType extends unknown> extends HttpClient<Security
           | "unsubscribed"
           | "error"
           | "loadedByProxy";
-        /** Filter the report for tags (serialized and urlencoded array) */
+        /** Filter the report for tags (serialized and urlencoded array). To pass multiple tags, a format of string separated by commas is used such as **"one, two, three"** */
         tags?: string;
         /** Filter on a specific message id */
         messageId?: string;
