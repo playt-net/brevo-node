@@ -705,6 +705,31 @@ export interface ErrorModel {
   message: string;
 }
 
+export interface ContactErrorModel {
+  /**
+   * Error code displayed in case of a failure
+   * @example "duplicate_parameter"
+   */
+  code:
+    | "invalid_parameter"
+    | "missing_parameter"
+    | "document_not_found"
+    | "account_in_process"
+    | "duplicate_parameter"
+    | "method_not_allowed"
+    | "out_of_range";
+  /**
+   * Readable message associated to the failure
+   * @example "email is already associated with another Contact"
+   */
+  message: string;
+  /**
+   * Additional information about the error
+   * @example {"duplicate_identifiers":["email"]}
+   */
+  metadata?: object;
+}
+
 export interface GetProcesses {
   /** List of processes available on your account */
   processes?: GetProcess[];
@@ -8999,7 +9024,7 @@ export class Brevo<SecurityDataType extends unknown> extends HttpClient<Security
      * @secure
      */
     createContact: (data: CreateContact, params: RequestParams = {}) =>
-      this.request<CreateUpdateContactModel, ErrorModel>({
+      this.request<CreateUpdateContactModel, ContactErrorModel>({
         path: `/contacts`,
         method: "POST",
         body: data,
@@ -9101,7 +9126,7 @@ export class Brevo<SecurityDataType extends unknown> extends HttpClient<Security
       },
       params: RequestParams = {},
     ) =>
-      this.request<void, ErrorModel>({
+      this.request<void, ContactErrorModel>({
         path: `/contacts/${identifier}`,
         method: "PUT",
         query: query,
