@@ -1,6 +1,6 @@
 {
   "name": "@playt/brevo",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "NodeJS client for @getbrevo/brevo",
   "repository": {
     "type": "git",
